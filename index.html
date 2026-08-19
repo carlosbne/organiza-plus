@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self'">
+  <meta name="description" content="Gestão de tarefas, cálculos e consultas para Departamento Pessoal.">
+  <title>Organiza+ | Rotina de Departamento Pessoal</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./src/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="topbar">
+    <div class="brand" aria-label="Organiza+">
+      <span class="brand-mark" aria-hidden="true">O+</span>
+      <span>Organiza+</span>
+    </div>
+    <nav class="topnav" aria-label="Navegação principal">
+      <a href="#tarefas">Tarefas</a>
+      <a href="#indicadores">Indicadores</a>
+      <a href="#ferramentas">Ferramentas</a>
+      <a href="#consultas">Consultas</a>
+    </nav>
+  </header>
+
+  <main id="conteudo" class="page-shell">
+    <section class="hero" aria-labelledby="hero-title">
+      <div>
+        <span class="eyebrow">Departamento Pessoal, sem complicação</span>
+        <h1 id="hero-title">Sua rotina organizada em um só lugar.</h1>
+        <p>Controle prazos, faça cálculos recorrentes e consulte procedimentos de DP com rapidez e segurança.</p>
+      </div>
+      <div class="hero-date">
+        <span>Hoje</span>
+        <strong id="todayLabel">—</strong>
+      </div>
+    </section>
+
+    <section id="indicadores" class="metrics" aria-label="Indicadores das tarefas">
+      <article class="metric metric-primary"><span>Eficiência</span><strong id="rate">0%</strong><small>tarefas concluídas</small></article>
+      <article class="metric"><span>Pendentes</span><strong id="pendingCount">0</strong><small>itens no fluxo</small></article>
+      <article class="metric metric-danger"><span>Atrasadas</span><strong id="overdueCount">0</strong><small>exigem atenção</small></article>
+      <article class="metric"><span>Concluídas</span><strong id="doneCount">0</strong><small id="lateDoneLabel">0 com atraso</small></article>
+      <article class="metric progress-card">
+        <span>Progresso geral</span>
+        <div class="progress-ring" id="progressRing" role="img" aria-label="Progresso de 0%">
+          <svg viewBox="0 0 36 36" aria-hidden="true"><circle class="ring-track" cx="18" cy="18" r="15.9"></circle><circle id="progressCircle" class="ring-progress" cx="18" cy="18" r="15.9" stroke-dasharray="0 100"></circle></svg>
+          <span id="ringValue">0%</span>
+        </div>
+      </article>
+    </section>
+
+    <section id="tarefas" class="workspace" aria-labelledby="tasks-title">
+      <div class="section-heading">
+        <div><span class="eyebrow">Fluxo diário</span><h2 id="tasks-title">Gestão de tarefas</h2></div>
+        <div class="filter-group" role="group" aria-label="Filtrar tarefas">
+          <button class="filter is-active" type="button" data-filter="all">Todas</button>
+          <button class="filter" type="button" data-filter="pending">Pendentes</button>
+          <button class="filter" type="button" data-filter="overdue">Atrasadas</button>
+          <button class="filter" type="button" data-filter="done">Concluídas</button>
+        </div>
+      </div>
+
+      <div class="workspace-grid">
+        <form id="taskForm" class="panel task-form" novalidate>
+          <div class="panel-heading"><h3 id="formTitle">Nova tarefa</h3><span class="pill">Dados locais</span></div>
+          <label>Título da tarefa <input id="taskTitle" name="title" maxlength="120" required autocomplete="off" placeholder="Ex.: Fechar folha mensal"></label>
+          <div class="form-row">
+            <label>Prazo <input id="taskDate" name="dueDate" type="date"></label>
+            <label>Prioridade
+              <select id="taskPriority" name="priority"><option value="alta">Alta</option><option value="media" selected>Média</option><option value="baixa">Baixa</option></select>
+            </label>
+          </div>
+          <div class="form-row">
+            <label>Cód. empresa <input id="companyCode" name="companyCode" maxlength="40" autocomplete="off" placeholder="001"></label>
+            <label>Empresa <input id="companyName" name="company" maxlength="120" autocomplete="organization" placeholder="Razão social"></label>
+          </div>
+          <label>Observações <textarea id="taskNotes" name="notes" maxlength="1000" rows="4" placeholder="Contexto, pendências e próximos passos"></textarea></label>
+          <p id="taskError" class="form-error" role="alert" hidden></p>
+          <div class="form-actions">
+            <button id="cancelEdit" class="button secondary" type="button" hidden>Cancelar</button>
+            <button class="button primary" type="submit"><span id="submitLabel">Adicionar ao fluxo</span></button>
+          </div>
+          <p class="privacy-note">🔒 As informações ficam somente neste navegador.</p>
+        </form>
+
+        <div class="task-board" aria-live="polite">
+          <div id="taskList" class="task-list"></div>
+          <div id="emptyState" class="empty-state">
+            <span aria-hidden="true">✓</span>
+            <h3>Nenhuma tarefa por aqui</h3>
+            <p>Adicione uma tarefa ou escolha outro filtro.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="ferramentas" class="tools-section" aria-labelledby="tools-title">
+      <div class="section-heading"><div><span class="eyebrow">Cálculos frequentes</span><h2 id="tools-title">Ferramentas</h2></div></div>
+      <div class="tool-grid">
+        <button class="tool-card" type="button" data-dialog="calcDialog"><span class="tool-icon blue">＋</span><span><strong>Adicionais e DSR</strong><small>Horas extras e adicional noturno</small></span><span aria-hidden="true">→</span></button>
+        <button class="tool-card" type="button" data-dialog="costDialog"><span class="tool-icon purple">R$</span><span><strong>Custo de contratação</strong><small>Encargos, provisões e benefícios</small></span><span aria-hidden="true">→</span></button>
+      </div>
+    </section>
+
+    <section id="consultas" class="tools-section" aria-labelledby="consult-title">
+      <div class="section-heading"><div><span class="eyebrow">Base de conhecimento</span><h2 id="consult-title">Manuais e procedimentos</h2></div></div>
+      <div class="tool-grid three">
+        <button class="tool-card" type="button" data-dialog="manualDialog"><span class="tool-icon sand">DP</span><span><strong>Manual DP</strong><small>Dúvidas trabalhistas frequentes</small></span><span aria-hidden="true">→</span></button>
+        <button class="tool-card" type="button" data-dialog="fgtsDialog"><span class="tool-icon green">FG</span><span><strong>FGTS Digital</strong><small>Guias mensais e rescisórias</small></span><span aria-hidden="true">→</span></button>
+        <button class="tool-card" type="button" data-dialog="proceduresDialog"><span class="tool-icon gray">↗</span><span><strong>Rescisão e seguro</strong><small>Procedimentos operacionais</small></span><span aria-hidden="true">→</span></button>
+      </div>
+    </section>
+  </main>
+
+  <footer><strong>Organiza+</strong><span>Ferramenta de apoio à rotina de Departamento Pessoal.</span><small>Confirme regras, alíquotas e convenções coletivas antes de decisões oficiais.</small></footer>
+
+  <dialog id="calcDialog" class="modal">
+    <form method="dialog" class="modal-shell"><header><div><span class="eyebrow">Calculadora</span><h2>Adicionais e DSR</h2></div><button class="icon-button" value="close" aria-label="Fechar">×</button></header>
+      <div class="modal-body two-columns">
+        <div class="field-grid" id="calcFields">
+          <label>Salário-base (R$)<input id="calcSalary" type="number" min="0" step="0.01" value="2200"></label>
+          <label>Divisor mensal (h)<input id="calcDivisor" type="number" min="1" step="1" value="220"></label>
+          <label>Hora extra (%)<input id="overtimePercent" type="number" min="0" step="1" value="50"></label>
+          <label>Horas extras (HH:MM)<input id="overtimeHours" inputmode="decimal" value="01:30" placeholder="01:30"></label>
+          <label>Adicional noturno (%)<input id="nightPercent" type="number" min="0" step="1" value="20"></label>
+          <label>Horas noturnas (HH:MM)<input id="nightHours" inputmode="decimal" value="00:00" placeholder="07:00"></label>
+          <label>Dias úteis<input id="workdays" type="number" min="1" step="1" value="25"></label>
+          <label>DSR / feriados<input id="restDays" type="number" min="0" step="1" value="5"></label>
+        </div>
+        <aside class="result-box" id="calcResult" aria-live="polite"></aside>
+      </div>
+      <p id="calcError" class="form-error modal-error" role="alert" hidden></p>
+    </form>
+  </dialog>
+
+  <dialog id="costDialog" class="modal wide">
+    <form method="dialog" class="modal-shell"><header><div><span class="eyebrow">Simulador</span><h2>Custo de contratação CLT</h2></div><button class="icon-button" value="close" aria-label="Fechar">×</button></header>
+      <div class="modal-body">
+        <div class="field-grid cost-fields" id="costFields">
+          <label>Salário proposto (R$)<input id="costSalary" type="number" min="0.01" step="0.01" value="3000"></label>
+          <label>Regime tributário<select id="taxRegime"><option value="presumido_real">Lucro Presumido / Real</option><option value="simples_outros">Simples — Anexos I, II, III e V</option><option value="simples_iv">Simples — Anexo IV</option></select></label>
+          <label>Vale-transporte (R$)<input id="transport" type="number" min="0" step="0.01" value="0"></label>
+          <label>Vale-refeição (R$)<input id="meal" type="number" min="0" step="0.01" value="0"></label>
+          <label>Outros benefícios (R$)<input id="benefits" type="number" min="0" step="0.01" value="0"></label>
+        </div>
+        <div id="costSummary" class="cost-summary" aria-live="polite"></div>
+        <div class="table-wrap"><table><caption>Memória de cálculo mensal</caption><thead><tr><th>Componente</th><th>Regra</th><th>Valor</th></tr></thead><tbody id="costTable"></tbody></table></div>
+      </div>
+      <p id="costError" class="form-error modal-error" role="alert" hidden></p>
+    </form>
+  </dialog>
+
+  <dialog id="manualDialog" class="modal wide info-dialog">
+    <form method="dialog" class="modal-shell"><header><div><span class="eyebrow">Consulta rápida</span><h2>Manual legislativo de DP</h2></div><button class="icon-button" value="close" aria-label="Fechar">×</button></header><div class="modal-body knowledge">
+      <section><h3>Salário e remuneração</h3><details><summary>Como calcular salário mensal e proporcional?</summary><p>Valor-hora: salário bruto ÷ jornada mensal. Proporcional: (salário ÷ 30) × dias trabalhados.</p></details><details><summary>Qual é o prazo de pagamento?</summary><p>Até o 5º dia útil do mês seguinte; o sábado conta como dia útil. Referência: art. 459 da CLT.</p></details><details><summary>Insalubridade e periculosidade</summary><p>Insalubridade pode ser de 10%, 20% ou 40%, conforme enquadramento. Periculosidade corresponde, em regra, a 30% do salário-base.</p></details><details><summary>Licença por casamento</summary><p>Até três dias consecutivos de ausência justificada. Referência: art. 473, II, da CLT.</p></details></section>
+      <section><h3>Férias</h3><details><summary>Direito e parcelamento</summary><p>O direito é adquirido após 12 meses. O período pode ser dividido em até três partes, sendo uma com ao menos 14 dias.</p></details><details><summary>Abono pecuniário</summary><p>É possível converter até um terço das férias em abono. Referência: art. 143 da CLT.</p></details><details><summary>Faltas injustificadas</summary><p>Mais de cinco faltas no período aquisitivo podem reduzir os dias de férias. Referência: art. 130 da CLT.</p></details></section>
+      <section><h3>Rescisão, saúde e sindicato</h3><details><summary>Prazo de pagamento da rescisão</summary><p>Dez dias corridos após o término do contrato. Consulte o art. 477 da CLT.</p></details><details><summary>Aviso-prévio e abandono</summary><p>No pedido de demissão, o aviso não cumprido pode ser descontado. O abandono exige análise do período de faltas e da intenção de abandonar.</p></details><details><summary>Atestados médicos</summary><p>Em regra, a empresa cobre os primeiros 15 dias; a partir do 16º, o caso pode ser encaminhado ao INSS.</p></details><details><summary>Data-base</summary><p>Mês de reajuste da categoria. A dispensa nos 30 dias anteriores pode gerar indenização adicional, conforme legislação aplicável.</p></details></section>
+    </div></form>
+  </dialog>
+
+  <dialog id="fgtsDialog" class="modal info-dialog">
+    <form method="dialog" class="modal-shell"><header><div><span class="eyebrow">Procedimento</span><h2>FGTS Digital</h2></div><button class="icon-button" value="close" aria-label="Fechar">×</button></header><div class="modal-body knowledge">
+      <section><h3>Guia rescisória e multa de 40%</h3><ol><li>Envie e valide o evento S-2299 no eSocial.</li><li>Acesse as remunerações para fins rescisórios.</li><li>Confira o histórico e gere a guia com pagamento por PIX.</li></ol></section>
+      <section><h3>Guia rápida</h3><p>Indicada para quitar toda a competência mensal. Confira empregador, competência, vencimento e trabalhadores antes da emissão.</p></section>
+      <section><h3>Guia parametrizada</h3><ol><li>Filtre por competência, estabelecimento ou CPF.</li><li>Selecione os débitos desejados.</li><li>Adicione à guia, revise e emita.</li></ol></section>
+    </div></form>
+  </dialog>
+
+  <dialog id="proceduresDialog" class="modal info-dialog">
+    <form method="dialog" class="modal-shell"><header><div><span class="eyebrow">Passo a passo</span><h2>Rescisão e seguro-desemprego</h2></div><button class="icon-button" value="close" aria-label="Fechar">×</button></header><div class="modal-body knowledge">
+      <section><h3>Importação no Empregador Web</h3><ol><li>Acesse o portal com o certificado do gestor.</li><li>Abra <strong>Requerimento → Importar arquivo</strong>.</li><li>Selecione o arquivo .SD, importe e registre o protocolo.</li></ol></section>
+      <section><h3>Consulta de arquivo e erros</h3><ol><li>Abra <strong>Requerimento → Consultar arquivo</strong>.</li><li>Filtre pela data de envio.</li><li>Confira divergências de CPF/PIS, nome e dados da rescisão antes de corrigir.</li></ol></section>
+      <section><h3>Checklist de rescisão</h3><ol><li>Confirme motivo, datas e aviso-prévio.</li><li>Valide eventos e bases no eSocial.</li><li>Revise verbas, descontos, FGTS e prazo legal.</li><li>Emita documentos e arquive os comprovantes.</li></ol></section>
+    </div></form>
+  </dialog>
+</body>
+</html>

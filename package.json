@@ -1,0 +1,14 @@
+{
+  "name": "organiza-plus",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "test:security": "node --test tests/security.test.js",
+    "serve": "python -m http.server 4173"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
