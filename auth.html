@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'none'; form-action 'self'">
+  <title>Entrar | Organiza+</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./auth.css">
+</head>
+<body class="auth-page">
+  <main class="auth-layout">
+    <section class="auth-intro">
+      <a class="brand" href="./auth.html"><span class="brand-mark">O+</span><span>Organiza<span class="brand-plus">+</span></span></a>
+      <div>
+        <span class="eyebrow">Sua rotina, mais leve</span>
+        <h1>Organize o dia.<br><em>Cuide do que importa.</em></h1>
+        <p>Um espaço simples para acompanhar tarefas e decisões do Departamento Pessoal.</p>
+      </div>
+      <small>Gestão clara para rotinas que pedem atenção.</small>
+    </section>
+    <section class="auth-card" aria-labelledby="authTitle">
+      <div class="auth-card-heading"><span class="eyebrow">Bem-vindo de volta</span><h2 id="authTitle">Entrar na sua conta</h2><p id="authSubtitle">Acesse seu fluxo de trabalho.</p></div>
+      <form id="authForm" novalidate>
+        <label>E-mail<input id="authEmail" type="email" autocomplete="email" required></label>
+        <label>Senha<input id="authPassword" type="password" minlength="6" autocomplete="current-password" required></label>
+        <p id="authError" class="form-error" role="alert" hidden></p>
+        <button id="authSubmit" class="button primary auth-submit" type="submit">Entrar</button>
+      </form>
+      <p class="auth-switch"><span id="authSwitchText">Ainda não tem uma conta?</span> <button id="authToggle" type="button">Criar conta</button></p>
+    </section>
+  </main>
+  <script type="module" src="./src/auth.js"></script>
+</body>
+</html>

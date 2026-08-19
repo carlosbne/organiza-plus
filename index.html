@@ -56,6 +56,7 @@
     <section id="tarefas" class="workspace" aria-labelledby="tasks-title">
       <div class="section-heading">
         <div><span class="eyebrow">Fluxo diário</span><h2 id="tasks-title">Gestão de tarefas</h2></div>
+        <button id="logoutButton" class="button secondary" type="button">Sair</button>
         <div class="filter-group" role="group" aria-label="Filtrar tarefas">
           <button class="filter is-active" type="button" data-filter="all">Todas</button>
           <button class="filter" type="button" data-filter="pending">Pendentes</button>
@@ -63,16 +64,6 @@
           <button class="filter" type="button" data-filter="done">Concluídas</button>
         </div>
       </div>
-
-      <form id="authForm" class="panel" novalidate>
-        <div class="panel-heading"><h3 id="authTitle">Entrar</h3><span class="pill">Conta segura</span></div>
-        <div class="form-row">
-          <label>E-mail <input id="authEmail" type="email" autocomplete="email" required></label>
-          <label>Senha <input id="authPassword" type="password" minlength="6" autocomplete="current-password" required></label>
-        </div>
-        <p id="authError" class="form-error" role="alert" hidden></p>
-        <div class="form-actions"><button id="authSubmit" class="button primary" type="submit">Entrar</button><button id="authToggle" class="button secondary" type="button">Criar conta</button><button id="authLogout" class="button secondary" type="button" hidden>Sair</button></div>
-      </form>
 
       <div class="workspace-grid">
         <form id="taskForm" class="panel task-form" novalidate>
