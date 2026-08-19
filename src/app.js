@@ -6,6 +6,7 @@ import {
   isTaskOverdue,
   parseStoredTasks,
 } from './core.js';
+import { isSupabaseConfigured, loadTasks, removeTask, upsertTask } from './supabase.js';
 
 const STORAGE_KEY = 'organizaPlus.tasks.v3';
 const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -29,6 +30,10 @@ function setError(element, message = '') {
 
 function saveTasks() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+}
+
+function syncTask(task) {
+  return upsertTask(task).catch((error) => console.warn('Supabase: falha ao sincronizar tarefa.', error));
 }
 
 function element(tag, className, text) {
@@ -135,8 +140,11 @@ function submitTask(event) {
       const old = tasks.find((task) => task.id === editingId);
       const updated = createTask({ ...taskInput(), done: old.done, wasOverdue: old.wasOverdue }, { id: old.id, now: old.createdAt });
       tasks = tasks.map((task) => task.id === editingId ? updated : task);
+      syncTask(updated);
     } else {
-      tasks = [...tasks, createTask(taskInput())];
+      const created = createTask(taskInput());
+      tasks = [...tasks, created];
+      syncTask(created);
     }
     resetTaskForm();
     render();
@@ -166,6 +174,8 @@ function completeTask(id) {
   tasks = tasks.map((task) => task.id === id
     ? createTask({ ...task, done: true, wasOverdue: task.wasOverdue || isTaskOverdue(task, today) }, { id: task.id, now: task.createdAt })
     : task);
+  const updated = tasks.find((task) => task.id === id);
+  if (updated) syncTask(updated);
   render();
 }
 
@@ -173,6 +183,7 @@ function deleteTask(id) {
   const task = tasks.find((item) => item.id === id);
   if (!task || !window.confirm(`Excluir a tarefa “${task.title}”?`)) return;
   tasks = tasks.filter((item) => item.id !== id);
+  removeTask(id).catch((error) => console.warn('Supabase: falha ao excluir tarefa.', error));
   if (editingId === id) resetTaskForm();
   render();
 }
@@ -300,7 +311,7 @@ function configureDialogs() {
   });
 }
 
-function init() {
+async function init() {
   $('#todayLabel').textContent = longDate.format(new Date());
   $('#taskForm').addEventListener('submit', submitTask);
   $('#cancelEdit').addEventListener('click', resetTaskForm);
@@ -316,6 +327,14 @@ function init() {
   configureDialogs();
   updateAdditions();
   updateCost();
+  if (isSupabaseConfigured) {
+    try {
+      const remoteTasks = await loadTasks();
+      if (remoteTasks) tasks = parseStoredTasks(JSON.stringify(remoteTasks));
+    } catch (error) {
+      console.warn('Supabase indisponível; usando dados locais.', error);
+    }
+  }
   render();
 }
 

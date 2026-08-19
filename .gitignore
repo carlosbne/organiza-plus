@@ -1,0 +1,5 @@
+src/config.local.js
+.env.local
+.env
+node_modules/
+supabase/.temp/

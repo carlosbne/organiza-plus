@@ -34,10 +34,13 @@ O teste de ponta a ponta (`tests/e2e.mjs`) usa o Chrome via DevTools e foi execu
 
 ## Privacidade e segurança
 
-- Os dados das tarefas ficam no `localStorage` do navegador.
+- Sem configuração, os dados das tarefas ficam no `localStorage` do navegador.
+- Para persistência compartilhada, configure `SUPABASE_URL` e `SUPABASE_ANON_KEY` no `.env`. Como esta versão é uma aplicação estática sem bundler, os mesmos valores também precisam estar em `src/config.js` para serem disponibilizados ao navegador. Use somente a chave publishable/anon no frontend; nunca coloque a service role key.
+- Execute `supabase link --project-ref SEU_PROJECT_REF` e `supabase db push` para aplicar `supabase/migrations/20260818000000_create_tasks.sql`.
+- A tabela usa RLS e atualmente permite operações apenas para usuários autenticados; implemente login antes de publicar dados reais.
 - Conteúdo digitado é inserido com `textContent`, não como HTML.
 - A aplicação não usa `eval`, manipuladores inline ou dependências JavaScript externas.
-- A política CSP restringe scripts e conexões à própria aplicação.
+- A política CSP restringe scripts e conexões à própria aplicação. Ao usar Supabase, atualize `connect-src` no `index.html` para incluir `https://SEU_PROJECT_REF.supabase.co`.
 - Links para o Google Agenda usam `noopener,noreferrer`.
 
 ## Observação técnica e legal
