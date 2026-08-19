@@ -6,7 +6,7 @@ import {
   isTaskOverdue,
   parseStoredTasks,
 } from './core.js';
-import { isSupabaseConfigured, loadTasks, removeTask, upsertTask } from './supabase.js';
+import { getSession, isSupabaseConfigured, loadTasks, onAuthStateChange, removeTask, signIn, signOut, signUp, upsertTask } from './supabase.js';
 
 const STORAGE_KEY = 'organizaPlus.tasks.v3';
 const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -17,6 +17,27 @@ const $ = (selector, root = document) => root.querySelector(selector);
 let tasks = parseStoredTasks(localStorage.getItem(STORAGE_KEY));
 let activeFilter = 'all';
 let editingId = null;
+let authSignUpMode = false;
+let currentSession = null;
+
+function updateAuthUI() {
+  const signedIn = !isSupabaseConfigured || Boolean(currentSession);
+  $('#authForm').hidden = !isSupabaseConfigured || signedIn;
+  $('#authLogout').hidden = !signedIn;
+  $('#taskForm').hidden = !signedIn;
+  $('#taskList').hidden = !signedIn;
+}
+
+async function handleAuth(event) {
+  event.preventDefault();
+  try {
+    const email = $('#authEmail').value.trim();
+    const password = $('#authPassword').value;
+    const result = authSignUpMode ? await signUp(email, password) : await signIn(email, password);
+    if (result.error) throw result.error;
+    if (authSignUpMode && !result.data.session) setError($('#authError'), 'Conta criada. Confirme o e-mail para entrar.');
+  } catch (error) { setError($('#authError'), error.message); }
+}
 
 function localDateKey(date = new Date()) {
   const offset = date.getTimezoneOffset() * 60_000;
@@ -325,9 +346,23 @@ async function init() {
   $('#costFields').addEventListener('input', updateCost);
   $('#costFields').addEventListener('change', updateCost);
   configureDialogs();
+  $('#authForm').addEventListener('submit', handleAuth);
+  $('#authToggle').addEventListener('click', () => {
+    authSignUpMode = !authSignUpMode;
+    $('#authTitle').textContent = authSignUpMode ? 'Criar conta' : 'Entrar';
+    $('#authSubmit').textContent = authSignUpMode ? 'Cadastrar' : 'Entrar';
+    $('#authToggle').textContent = authSignUpMode ? 'Já tenho uma conta' : 'Criar conta';
+  });
+  $('#authLogout').addEventListener('click', () => signOut());
   updateAdditions();
   updateCost();
   if (isSupabaseConfigured) {
+    currentSession = (await getSession()).data.session;
+    onAuthStateChange((_event, session) => {
+      currentSession = session;
+      if (session) loadTasks().then((remote) => { tasks = parseStoredTasks(JSON.stringify(remote || [])); render(); updateAuthUI(); });
+      else { tasks = []; render(); updateAuthUI(); }
+    });
     try {
       const remoteTasks = await loadTasks();
       if (remoteTasks) tasks = parseStoredTasks(JSON.stringify(remoteTasks));
@@ -335,6 +370,7 @@ async function init() {
       console.warn('Supabase indisponível; usando dados locais.', error);
     }
   }
+  updateAuthUI();
   render();
 }
 

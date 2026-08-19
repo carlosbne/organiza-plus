@@ -64,6 +64,16 @@
         </div>
       </div>
 
+      <form id="authForm" class="panel" novalidate>
+        <div class="panel-heading"><h3 id="authTitle">Entrar</h3><span class="pill">Conta segura</span></div>
+        <div class="form-row">
+          <label>E-mail <input id="authEmail" type="email" autocomplete="email" required></label>
+          <label>Senha <input id="authPassword" type="password" minlength="6" autocomplete="current-password" required></label>
+        </div>
+        <p id="authError" class="form-error" role="alert" hidden></p>
+        <div class="form-actions"><button id="authSubmit" class="button primary" type="submit">Entrar</button><button id="authToggle" class="button secondary" type="button">Criar conta</button><button id="authLogout" class="button secondary" type="button" hidden>Sair</button></div>
+      </form>
+
       <div class="workspace-grid">
         <form id="taskForm" class="panel task-form" novalidate>
           <div class="panel-heading"><h3 id="formTitle">Nova tarefa</h3><span class="pill">Dados locais</span></div>
