@@ -30,6 +30,18 @@
       </form>
       <p class="auth-switch"><span id="authSwitchText">Ainda não tem uma conta?</span> <button id="authToggle" type="button">Criar conta</button></p>
     </section>
+
+    <section class="auth-card" aria-labelledby="registerTitle" hidden>
+      <div class="auth-card-heading"><span class="eyebrow">Bem-vindo</span><h2 id="registerTitle">Crie sua conta</h2><p id="registerSubtitle">Comece a organizar seu fluxo de trabalho.</p></div>
+      <form id="registerForm" novalidate>
+        <label>E-mail<input id="registerEmail" type="email" autocomplete="email" required></label>
+        <label>Senha<input id="registerPassword" type="password" minlength="6" autocomplete="new-password" required></label>
+        <p id="registerError" class="form-error" role="alert" hidden></p>
+        <button id="registerSubmit" class="button primary auth-submit" type="submit">Criar conta</button>
+      </form>
+      <p class="auth-switch"><span id="registerSwitchText">Já tem uma conta?</span> <button id="registerToggle" type="button">Entrar</button></p>
+    </section>
+
   </main>
   <script type="module" src="./src/auth.js"></script>
 </body>
