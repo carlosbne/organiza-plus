@@ -35,7 +35,7 @@ $('#authForm').addEventListener('submit', async (event) => {
     const result = signUpMode ? await signUp(email, password) : await signIn(email, password);
     if (result.error) throw result.error;
     if (signUpMode && !result.data.session) showError('authError', 'Conta criada. Confirme seu e-mail para entrar.');
-    else window.location.href = './index.html';
+    else window.location.href = './';
   } catch (error) { showError('authError', error.message); }
 });
 
@@ -56,7 +56,7 @@ $('#registerForm').addEventListener('submit', async (event) => {
     if (!isSupabaseConfigured) throw new Error('O Supabase ainda não foi configurado.');
     const result = await signUp($('#registerEmail').value.trim(), $('#registerPassword').value);
     if (result.error) throw result.error;
-    if (result.data.session) window.location.href = './index.html';
+    if (result.data.session) window.location.href = './';
     else showError('registerError', 'Conta criada. Confirme seu e-mail para entrar.');
   } catch (error) { showError('registerError', error.message); }
 });
@@ -72,7 +72,7 @@ $('#forgotForm').addEventListener('submit', async (event) => {
   showError('forgotError');
   try {
     if (!isSupabaseConfigured) throw new Error('O Supabase ainda não foi configurado.');
-    const result = await resetPasswordForEmail($('#forgotEmail').value.trim(), `${window.location.origin}/auth.html`);
+    const result = await resetPasswordForEmail($('#forgotEmail').value.trim(), `${window.location.origin}/auth`);
     if (result.error) throw result.error;
     showError('forgotError', 'Link enviado. Verifique sua caixa de entrada.');
   } catch (error) { showError('forgotError', error.message); }

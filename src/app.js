@@ -331,11 +331,11 @@ async function init() {
   updateCost();
   if (isSupabaseConfigured) {
     currentSession = (await getSession()).data.session;
-    if (!currentSession) { window.location.replace('./auth.html'); return; }
+    if (!currentSession) { window.location.replace('./auth'); return; }
     onAuthStateChange((_event, session) => {
       currentSession = session;
       if (session) loadTasks().then((remote) => { tasks = parseStoredTasks(JSON.stringify(remote || [])); render(); });
-      else window.location.replace('./auth.html');
+      else window.location.replace('./auth');
     });
     try {
       const remoteTasks = await loadTasks();
