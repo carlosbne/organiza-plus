@@ -358,10 +358,21 @@ async function init() {
     render();
   }));
   configureMobileNavigation();
-  $('#logoutLink').addEventListener('click', (event) => {
+  $('#logoutLink').addEventListener('click', async (event) => {
     if (!currentSession) return;
     event.preventDefault();
-    signOut();
+    const link = event.currentTarget;
+    link.setAttribute('aria-busy', 'true');
+    link.textContent = 'Saindo…';
+    try {
+      const result = await signOut();
+      if (result?.error) throw result.error;
+      window.location.replace('./auth');
+    } catch (error) {
+      console.error('Supabase: não foi possível encerrar a sessão.', error);
+      link.removeAttribute('aria-busy');
+      updateAuthNavigation();
+    }
   });
   $('#calcFields').addEventListener('input', updateAdditions);
   $('#costFields').addEventListener('input', updateCost);
