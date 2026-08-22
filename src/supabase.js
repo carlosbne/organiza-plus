@@ -11,6 +11,8 @@ export const onAuthStateChange = (callback) => supabase?.auth.onAuthStateChange(
 export const signIn = (email, password) => supabase.auth.signInWithPassword({ email, password });
 export const signUp = (email, password) => supabase.auth.signUp({ email, password });
 export const signOut = () => supabase.auth.signOut();
+export const resetPasswordForEmail = (email, redirectTo) => supabase.auth.resetPasswordForEmail(email, { redirectTo });
+export const updatePassword = (password) => supabase.auth.updateUser({ password });
 
 export async function loadTasks() {
   if (!supabase) return null;
