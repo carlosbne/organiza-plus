@@ -19,6 +19,41 @@ let activeFilter = 'all';
 let editingId = null;
 let currentSession = null;
 
+function updateAuthNavigation() {
+  const link = $('#loginLink');
+  if (!link) return;
+  if (currentSession) {
+    link.textContent = 'Sair';
+    link.href = '#logout';
+    link.setAttribute('aria-label', 'Sair da conta');
+  } else {
+    link.textContent = 'Entrar';
+    link.href = './auth';
+    link.removeAttribute('aria-label');
+  }
+}
+
+function configureMobileNavigation() {
+  const toggle = $('#menuToggle');
+  const nav = $('#primaryNav');
+  if (!toggle || !nav) return;
+  const close = () => {
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-label', 'Abrir menu');
+    nav.classList.remove('is-open');
+  };
+  toggle.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') !== 'true';
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+    nav.classList.toggle('is-open', open);
+  });
+  nav.addEventListener('click', (event) => {
+    if (event.target.closest('a') && event.target.closest('a') !== $('#loginLink')) close();
+  });
+  document.addEventListener('keydown', (event) => { if (event.key === 'Escape') close(); });
+}
+
 function localDateKey(date = new Date()) {
   const offset = date.getTimezoneOffset() * 60_000;
   return new Date(date.getTime() - offset).toISOString().slice(0, 10);
@@ -322,6 +357,12 @@ async function init() {
     document.querySelectorAll('[data-filter]').forEach((item) => item.classList.toggle('is-active', item === button));
     render();
   }));
+  configureMobileNavigation();
+  $('#loginLink').addEventListener('click', (event) => {
+    if (!currentSession) return;
+    event.preventDefault();
+    signOut();
+  });
   $('#calcFields').addEventListener('input', updateAdditions);
   $('#costFields').addEventListener('input', updateCost);
   $('#costFields').addEventListener('change', updateCost);
@@ -331,9 +372,11 @@ async function init() {
   updateCost();
   if (isSupabaseConfigured) {
     currentSession = (await getSession()).data.session;
+    updateAuthNavigation();
     if (!currentSession) { window.location.replace('./auth'); return; }
     onAuthStateChange((_event, session) => {
       currentSession = session;
+      updateAuthNavigation();
       if (session) loadTasks().then((remote) => { tasks = parseStoredTasks(JSON.stringify(remote || [])); render(); });
       else window.location.replace('./auth');
     });

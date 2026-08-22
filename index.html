@@ -14,11 +14,14 @@
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
   <header class="topbar">
-    <div class="brand" aria-label="Organiza+">
-      <span class="brand-mark" aria-hidden="true">O+</span>
-      <span>Organiza+</span>
-    </div>
-    <nav class="topnav" aria-label="Navegação principal">
+    <a class="brand" href="./" aria-label="Organiza+, página inicial">
+      <img class="brand-logo" src="./brand.svg" alt="">
+      <span class="brand-name">Organiza<span>+</span></span>
+    </a>
+    <button id="menuToggle" class="nav-toggle" type="button" aria-expanded="false" aria-controls="primaryNav" aria-label="Abrir menu">
+      <span></span><span></span><span></span>
+    </button>
+    <nav id="primaryNav" class="topnav" aria-label="Navegação principal">
       <a href="#tarefas">Tarefas</a>
       <a href="#indicadores">Indicadores</a>
       <a href="#ferramentas">Ferramentas</a>
@@ -57,7 +60,6 @@
     <section id="tarefas" class="workspace" aria-labelledby="tasks-title">
       <div class="section-heading">
         <div><span class="eyebrow">Fluxo diário</span><h2 id="tasks-title">Gestão de tarefas</h2></div>
-        <button id="logoutButton" class="button secondary" type="button">Sair</button>
         <div class="filter-group" role="group" aria-label="Filtrar tarefas">
           <button class="filter is-active" type="button" data-filter="all">Todas</button>
           <button class="filter" type="button" data-filter="pending">Pendentes</button>
