@@ -20,7 +20,7 @@ let editingId = null;
 let currentSession = null;
 
 function updateAuthNavigation() {
-  const link = $('#loginLink');
+  const link = $('#logoutLink');
   if (!link) return;
   if (currentSession) {
     link.textContent = 'Sair';
@@ -49,7 +49,7 @@ function configureMobileNavigation() {
     nav.classList.toggle('is-open', open);
   });
   nav.addEventListener('click', (event) => {
-    if (event.target.closest('a') && event.target.closest('a') !== $('#loginLink')) close();
+    if (event.target.closest('a') && event.target.closest('a') !== $('#logoutLink')) close();
   });
   document.addEventListener('keydown', (event) => { if (event.key === 'Escape') close(); });
 }
@@ -358,7 +358,7 @@ async function init() {
     render();
   }));
   configureMobileNavigation();
-  $('#loginLink').addEventListener('click', (event) => {
+  $('#logoutLink').addEventListener('click', (event) => {
     if (!currentSession) return;
     event.preventDefault();
     signOut();
@@ -367,7 +367,6 @@ async function init() {
   $('#costFields').addEventListener('input', updateCost);
   $('#costFields').addEventListener('change', updateCost);
   configureDialogs();
-  $('#logoutButton').addEventListener('click', () => signOut());
   updateAdditions();
   updateCost();
   if (isSupabaseConfigured) {
