@@ -6,12 +6,17 @@
   "scripts": {
     "test": "node --test",
     "test:security": "node --test tests/security.test.js",
-    "serve": "python -m http.server 4173"
+    "serve": "python -m http.server 4173",
+    "serve:dist": "python -m http.server 4174 --directory dist",
+    "build": "node build.mjs"
   },
   "engines": {
     "node": ">=20"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.3"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.12"
   }
 }
