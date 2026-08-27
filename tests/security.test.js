@@ -14,8 +14,17 @@ test('páginas HTML definem CSP restritiva e não carregam scripts de terceiros'
     assert.match(html, /Content-Security-Policy/);
     assert.match(html, /default-src 'self'/);
     assert.match(html, /script-src 'self'/);
+    assert.match(html, /style-src-elem 'self'/);
+    assert.match(html, /font-src 'self'/);
     assert.doesNotMatch(html, /<script[^>]+src=["']https?:/i);
   }
+});
+
+test('Netlify aplica a mesma CSP antes do carregamento da página', async () => {
+  const netlify = await source('netlify.toml');
+  assert.match(netlify, /Content-Security-Policy/);
+  assert.match(netlify, /style-src-elem 'self'/);
+  assert.match(netlify, /font-src 'self'/);
 });
 
 test('interfaces não usam manipuladores inline e Consultas fica separada da página principal', async () => {
@@ -40,13 +49,14 @@ test('simulador de rescisão expõe as opções adicionais do cenário de refer�
 });
 
 test('JavaScript evita APIs que permitem injeção de HTML ou execução dinâmica', async () => {
-  for (const file of ['src/app.js', 'src/consultas.js', 'src/auth.js', 'src/core.js', 'src/supabase.js', 'src/termination.js', 'src/taxes.js']) {
+  for (const file of ['src/app.js', 'src/consultas.js', 'src/auth.js', 'src/core.js', 'src/supabase.js', 'src/storage.js', 'src/termination.js', 'src/taxes.js']) {
     const javascript = await source(file);
     assert.doesNotMatch(javascript, /\.(innerHTML|outerHTML)\s*=/, file);
     assert.doesNotMatch(javascript, /insertAdjacentHTML|document\.write|\beval\s*\(|new Function/, file);
   }
   const app = await source('src/app.js');
   assert.match(app, /textContent/);
+  assert.doesNotMatch(app, /\blocalStorage\s*\./);
 });
 
 test('links externos são abertos sem acesso a window.opener', async () => {

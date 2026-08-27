@@ -8,6 +8,7 @@ import {
 } from './core.js';
 import { calculateTerminationSettlement } from './termination.js';
 import { getSession, isSupabaseConfigured, loadTasks, onAuthStateChange, removeTask, signOut, upsertTask } from './supabase.js';
+import { getSafeLocalStorage, readStorage, writeStorage } from './storage.js';
 
 const STORAGE_KEY = 'organizaPlus.tasks.v3';
 const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -15,7 +16,8 @@ const shortDate = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'sho
 const longDate = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
 const $ = (selector, root = document) => root.querySelector(selector);
 
-let tasks = parseStoredTasks(localStorage.getItem(STORAGE_KEY));
+const taskStorage = getSafeLocalStorage();
+let tasks = parseStoredTasks(readStorage(taskStorage, STORAGE_KEY));
 let activeFilter = 'all';
 let editingId = null;
 let currentSession = null;
@@ -66,7 +68,7 @@ function setError(element, message = '') {
 }
 
 function saveTasks() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  writeStorage(taskStorage, STORAGE_KEY, JSON.stringify(tasks));
 }
 
 function syncTask(task) {
