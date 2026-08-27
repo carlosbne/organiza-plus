@@ -6,6 +6,7 @@ import {
   isTaskOverdue,
   parseStoredTasks,
 } from './core.js';
+import { calculateTerminationSettlement } from './termination.js';
 import { getSession, isSupabaseConfigured, loadTasks, onAuthStateChange, removeTask, signOut, upsertTask } from './supabase.js';
 
 const STORAGE_KEY = 'organizaPlus.tasks.v3';
@@ -332,6 +333,113 @@ function updateCost() {
   }
 }
 
+const terminationNoticeOptions = Object.freeze({
+  sem_justa_causa: Object.freeze([
+    ['indenizado', 'Indenizado pelo empregador'],
+    ['trabalhado', 'Trabalhado'],
+  ]),
+  pedido_demissao: Object.freeze([
+    ['trabalhado', 'Trabalhado'],
+    ['dispensado', 'Dispensado do cumprimento'],
+    ['descontado', 'Descontado do empregado'],
+  ]),
+  com_justa_causa: Object.freeze([
+    ['nao_aplicavel', 'Não aplicável'],
+  ]),
+  acordo_484a: Object.freeze([
+    ['indenizado', 'Indenizado pela metade'],
+    ['trabalhado', 'Trabalhado'],
+  ]),
+});
+
+function formatDateKey(dateKey) {
+  return shortDate.format(new Date(`${dateKey}T12:00:00`));
+}
+
+function detailRow(label, value, className = '') {
+  const row = element('div', `result-row ${className}`.trim());
+  row.append(element('span', '', label), element('strong', '', value));
+  return row;
+}
+
+function syncTerminationNoticeOptions() {
+  const type = $('#terminationType');
+  const notice = $('#terminationNotice');
+  const options = terminationNoticeOptions[type.value] || [];
+  const current = notice.value;
+  notice.replaceChildren(...options.map(([value, label]) => {
+    const option = element('option', '', label);
+    option.value = value;
+    return option;
+  }));
+  notice.value = options.some(([value]) => value === current) ? current : options[0]?.[0] || '';
+}
+
+function updateTermination() {
+  const error = $('#terminationError');
+  const resultBox = $('#terminationResult');
+  if (!$('#terminationAdmissionDate').value || !$('#terminationDate').value) {
+    resultBox.replaceChildren(element('p', '', 'Preencha admissão e desligamento para visualizar a estimativa.'));
+    setError(error);
+    return;
+  }
+
+  try {
+    const result = calculateTerminationSettlement({
+      terminationType: $('#terminationType').value,
+      noticeMode: $('#terminationNotice').value,
+      admissionDate: $('#terminationAdmissionDate').value,
+      terminationDate: $('#terminationDate').value,
+      salary: $('#terminationSalary').value,
+      additionalMonthlyAverage: $('#terminationAdditional').value,
+      vacationPeriodsDue: $('#terminationVacationDue').value,
+      vacationPeriodsDouble: $('#terminationVacationDouble').value,
+      fgtsBalance: $('#terminationFgts').value,
+    });
+    const rows = [
+      detailRow('Remuneração considerada', brl.format(result.remuneration)),
+      resultRow('Saldo de salário', brl.format(result.salaryBalance)),
+      resultRow(`Aviso-prévio (${result.noticeDays} dias)`, result.noticePay ? brl.format(result.noticePay) : result.noticeModeLabel),
+      resultRow(`13º proporcional (${result.thirteenthMonths}/12)`, brl.format(result.thirteenthProportional)),
+      resultRow(`Férias proporcionais (${result.vacationProportionalMonths}/12)`, brl.format(result.vacationProportionalBase + result.vacationProportionalThird)),
+    ];
+    if (result.vacationPeriodsDue) rows.push(resultRow(`Férias vencidas (${result.vacationPeriodsDue} período(s))`, brl.format(result.vacationDueSimpleBase + result.vacationDueSimpleThird)));
+    if (result.vacationPeriodsDouble) rows.push(resultRow(`Férias em dobro (${result.vacationPeriodsDouble} período(s))`, brl.format(result.vacationDueDoubleBase + result.vacationDueDoubleThird)));
+    if (result.projectedNoticeDays) rows.push(detailRow('Término projetado do aviso', `${formatDateKey(result.projectedTerminationDate)} (${result.projectedNoticeDays} dias)`));
+    rows.push(resultRow('Total bruto', brl.format(result.totalGross)));
+    if (result.noticeDeduction) rows.push(resultRow('Desconto de aviso', `− ${brl.format(result.noticeDeduction)}`));
+    rows.push(resultRow('Total antes de INSS/IRRF', brl.format(result.directSettlement), 'result-total'));
+    if (result.fgtsFinePercent) {
+      rows.push(resultRow(`Multa do FGTS (${result.fgtsFinePercent}%)`, brl.format(result.fgtsFine)));
+      rows.push(resultRow(`Saque do FGTS (até ${result.fgtsWithdrawalPercent}%)`, brl.format(result.fgtsWithdrawal)));
+    }
+    rows.push(element('p', 'result-note', result.unemploymentEligible
+      ? 'Seguro-desemprego: possível, sujeito aos demais requisitos legais.'
+      : 'Seguro-desemprego: não previsto para esta modalidade.'));
+    resultBox.replaceChildren(element('h3', '', 'Resumo estimado'), ...rows);
+    setError(error);
+  } catch (exception) {
+    resultBox.replaceChildren(element('p', '', 'Revise os dados para visualizar a estimativa.'));
+    setError(error, exception.message);
+  }
+}
+
+function configureTerminationSimulator() {
+  const type = $('#terminationType');
+  const terminationDate = $('#terminationDate');
+  if (!type || !terminationDate) return;
+  terminationDate.value = localDateKey();
+  type.addEventListener('change', () => {
+    syncTerminationNoticeOptions();
+    updateTermination();
+  });
+  document.querySelectorAll('#terminationFields input, #terminationFields select').forEach((field) => {
+    if (field !== type) field.addEventListener('input', updateTermination);
+    field.addEventListener('change', updateTermination);
+  });
+  syncTerminationNoticeOptions();
+}
+
 function configureDialogs() {
   document.addEventListener('click', (event) => {
     const trigger = event.target.closest('[data-dialog]');
@@ -377,6 +485,7 @@ async function init() {
   $('#calcFields').addEventListener('input', updateAdditions);
   $('#costFields').addEventListener('input', updateCost);
   $('#costFields').addEventListener('change', updateCost);
+  configureTerminationSimulator();
   configureDialogs();
   updateAdditions();
   updateCost();

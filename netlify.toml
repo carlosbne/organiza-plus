@@ -7,6 +7,11 @@
   to = "/auth.html"
   status = 200
 
+[[redirects]]
+  from = "/consultas"
+  to = "/consultas.html"
+  status = 200
+
 [[headers]]
   for = "/*"
   [headers.values]

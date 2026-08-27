@@ -5,9 +5,10 @@ Protótipo local, simples e minimalista para a rotina de Departamento Pessoal. F
 ## Recursos
 
 - Gestão de tarefas com prazo, empresa, prioridade, observações, filtros e indicadores.
-- Persistência local no navegador, sem envio de dados a servidores externos.
+- Persistência local no navegador e sincronização opcional com Supabase por usuário autenticado.
 - Calculadora de horas extras, adicional noturno com hora reduzida e DSR.
 - Simulador mensal de custo de contratação por regime tributário.
+- Simulador estimativo de rescisão contratual para contrato por prazo indeterminado.
 - Manual de dúvidas frequentes, FGTS Digital, rescisão e seguro-desemprego.
 - Layout responsivo e navegação por teclado.
 
@@ -22,6 +23,8 @@ Alternativamente, no terminal:
 ```bash
 npm run serve
 ```
+
+As consultas ficam disponíveis em [`/consultas`](./consultas.html), separadas do fluxo principal. O simulador de rescisão fica em **Ferramentas**.
 
 ## Testes
 
@@ -38,6 +41,7 @@ O teste de ponta a ponta (`tests/e2e.mjs`) usa o Chrome via DevTools e foi execu
 - Para persistência compartilhada, configure `SUPABASE_URL` e `SUPABASE_ANON_KEY` no `.env`. Como esta versão é uma aplicação estática sem bundler, os mesmos valores também precisam estar em `src/config.js` para serem disponibilizados ao navegador. Use somente a chave publishable/anon no frontend; nunca coloque a service role key.
 - Execute `supabase link --project-ref SEU_PROJECT_REF` e `supabase db push` para aplicar `supabase/migrations/20260818000000_create_tasks.sql`.
 - A tabela usa RLS e atualmente permite operações apenas para usuários autenticados; implemente login antes de publicar dados reais.
+- O simulador de rescisão calcula uma estimativa de verbas brutas para contratos por prazo indeterminado, usando salário, média mensal informada, datas, férias vencidas e saldo de FGTS. Não calcula INSS, IRRF, contratos a termo, estabilidades, faltas, médias detalhadas, convenções coletivas ou substitui TRCT/eSocial.
 - A tela de autenticação também permite solicitar redefinição de senha; configure o `Site URL` e `Redirect URLs` em `Authentication → URL Configuration` para apontar para `auth.html` no domínio publicado.
 - Conteúdo digitado é inserido com `textContent`, não como HTML.
 - A aplicação não usa `eval`, manipuladores inline ou dependências JavaScript externas.
