@@ -154,14 +154,19 @@
     <form method="dialog" class="modal-shell"><header><div><span class="eyebrow">Estimativa</span><h2>Rescisão contratual</h2></div><button class="icon-button" value="close" aria-label="Fechar">×</button></header>
       <div class="modal-body two-columns">
         <div>
-          <p class="modal-intro">Informe os dados do contrato por prazo indeterminado para estimar as verbas brutas do desligamento.</p>
+          <p class="modal-intro">Informe os dados do contrato por prazo indeterminado para estimar as verbas do desligamento, com adicionais e descontos discriminados.</p>
           <div class="field-grid" id="terminationFields">
+            <label>Nome do empregado<input id="terminationEmployeeName" type="text" maxlength="120" autocomplete="name" placeholder="Opcional"></label>
             <label>Tipo de desligamento<select id="terminationType"><option value="sem_justa_causa">Dispensa sem justa causa</option><option value="pedido_demissao">Pedido de demissão</option><option value="com_justa_causa">Dispensa por justa causa</option><option value="acordo_484a">Rescisão por acordo (art. 484-A)</option></select></label>
             <label>Modalidade do aviso<select id="terminationNotice"></select></label>
             <label>Data de admissão<input id="terminationAdmissionDate" type="date"></label>
             <label>Data do desligamento<input id="terminationDate" type="date"></label>
             <label>Salário-base (R$)<input id="terminationSalary" type="number" min="0.01" step="0.01" value="3000"></label>
-            <label>Média de adicionais e variáveis (R$)<input id="terminationAdditional" type="number" min="0" step="0.01" value="0"></label>
+            <label>Salário mínimo de referência (R$)<input id="terminationMinimumWage" type="number" min="0.01" step="0.01" value="1621"></label>
+            <label>Insalubridade<select id="terminationInsalubrity"><option value="0">Não possui</option><option value="10">Grau mínimo (10% do salário mínimo)</option><option value="20">Grau médio (20% do salário mínimo)</option><option value="40">Grau máximo (40% do salário mínimo)</option></select></label>
+            <label>Periculosidade<select id="terminationHazardous"><option value="0">Não possui</option><option value="30">30% do salário-base</option></select></label>
+            <label>Número de dependentes (IRRF)<input id="terminationDependents" type="number" min="0" max="50" step="1" value="0"></label>
+            <label>Outros adicionais / média variável (R$)<input id="terminationAdditional" type="number" min="0" step="0.01" value="0"></label>
             <label>Férias vencidas simples (períodos)<input id="terminationVacationDue" type="number" min="0" max="50" step="1" value="0"></label>
             <label>Férias vencidas em dobro (períodos)<input id="terminationVacationDouble" type="number" min="0" max="50" step="1" value="0"></label>
             <label>Saldo do FGTS para a multa/saque (R$)<input id="terminationFgts" type="number" min="0" step="0.01" value="0"></label>
@@ -170,7 +175,7 @@
         </div>
         <aside class="result-box termination-result" id="terminationResult" aria-live="polite"><p>Preencha admissão e desligamento para visualizar a estimativa.</p></aside>
       </div>
-      <p class="legal-note">Estimativa antes de INSS, IRRF e outros descontos. Não contempla contrato a termo, estabilidade, faltas, parcelas variáveis sem média informada, convenção coletiva ou conferência do eSocial/TRCT.</p>
+      <p class="legal-note">INSS e IRRF estimados pela tabela de 2026, com incidência separada sobre saldo salarial e 13º atual. Insalubridade depende de caracterização técnica; esta estimativa não acumula os adicionais. Não contempla contrato a termo, estabilidade, faltas, parcelas variáveis sem média informada, RRA, múltiplos vínculos, convenção coletiva ou conferência do eSocial/TRCT.</p>
     </form>
   </dialog>
 

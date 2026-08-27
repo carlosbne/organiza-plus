@@ -28,17 +28,35 @@ test('interfaces não usam manipuladores inline e Consultas fica separada da pá
   assert.match(consultations, /id=["'](?:manualDialog|fgtsDialog|proceduresDialog)["']/);
 });
 
+test('simulador de rescisão expõe as opções adicionais do cenário de referência', async () => {
+  const home = await source('index.html');
+  for (const field of ['terminationEmployeeName', 'terminationMinimumWage', 'terminationInsalubrity', 'terminationHazardous', 'terminationDependents']) {
+    assert.match(home, new RegExp(`id=["']${field}["']`));
+  }
+  assert.match(home, /value="10"[^>]*>Grau mínimo/);
+  assert.match(home, /value="20"[^>]*>Grau médio/);
+  assert.match(home, /value="40"[^>]*>Grau máximo/);
+  assert.match(home, /value="30"[^>]*>30% do salário-base/);
+});
+
 test('JavaScript evita APIs que permitem injeção de HTML ou execução dinâmica', async () => {
+  for (const file of ['src/app.js', 'src/consultas.js', 'src/auth.js', 'src/core.js', 'src/supabase.js', 'src/termination.js', 'src/taxes.js']) {
+    const javascript = await source(file);
+    assert.doesNotMatch(javascript, /\.(innerHTML|outerHTML)\s*=/, file);
+    assert.doesNotMatch(javascript, /insertAdjacentHTML|document\.write|\beval\s*\(|new Function/, file);
+  }
   const app = await source('src/app.js');
-  const consultations = await source('src/consultas.js');
-  assert.doesNotMatch(app, /\.(innerHTML|outerHTML)\s*=/);
-  assert.doesNotMatch(app, /insertAdjacentHTML|document\.write|\beval\s*\(|new Function/);
   assert.match(app, /textContent/);
-  assert.doesNotMatch(consultations, /\.(innerHTML|outerHTML)\s*=/);
-  assert.doesNotMatch(consultations, /insertAdjacentHTML|document\.write|\beval\s*\(|new Function/);
 });
 
 test('links externos são abertos sem acesso a window.opener', async () => {
   const app = await source('src/app.js');
   assert.match(app, /noopener,noreferrer/);
+});
+
+test('frontend não contém credenciais privilegiadas do Supabase', async () => {
+  for (const file of ['src/config.js', 'src/supabase.js', '.env.example']) {
+    const javascript = await source(file);
+    assert.doesNotMatch(javascript, /service[_-]?role|SUPABASE_SERVICE_ROLE/i, file);
+  }
 });

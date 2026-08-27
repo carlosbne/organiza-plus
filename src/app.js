@@ -386,36 +386,65 @@ function updateTermination() {
 
   try {
     const result = calculateTerminationSettlement({
+      employeeName: $('#terminationEmployeeName').value,
       terminationType: $('#terminationType').value,
       noticeMode: $('#terminationNotice').value,
       admissionDate: $('#terminationAdmissionDate').value,
       terminationDate: $('#terminationDate').value,
       salary: $('#terminationSalary').value,
+      minimumWage: $('#terminationMinimumWage').value,
+      insalubrityPercent: $('#terminationInsalubrity').value,
+      hazardousPercent: $('#terminationHazardous').value,
+      dependents: $('#terminationDependents').value,
       additionalMonthlyAverage: $('#terminationAdditional').value,
       vacationPeriodsDue: $('#terminationVacationDue').value,
       vacationPeriodsDouble: $('#terminationVacationDouble').value,
       fgtsBalance: $('#terminationFgts').value,
     });
     const rows = [
+      detailRow('Empregado', result.employeeName || 'Não informado'),
       detailRow('Remuneração considerada', brl.format(result.remuneration)),
-      resultRow('Saldo de salário', brl.format(result.salaryBalance)),
-      resultRow(`Aviso-prévio (${result.noticeDays} dias)`, result.noticePay ? brl.format(result.noticePay) : result.noticeModeLabel),
-      resultRow(`13º proporcional (${result.thirteenthMonths}/12)`, brl.format(result.thirteenthProportional)),
-      resultRow(`Férias proporcionais (${result.vacationProportionalMonths}/12)`, brl.format(result.vacationProportionalBase + result.vacationProportionalThird)),
+      resultRow('Saldo de salário (salário-base)', brl.format(result.salaryBalanceBase)),
     ];
+    if (result.salaryBalanceInsalubrity) rows.push(resultRow('Vantagem / insalubridade sobre saldo', brl.format(result.salaryBalanceInsalubrity)));
+    if (result.salaryBalancePericulosidade) rows.push(resultRow('Vantagem / periculosidade sobre saldo', brl.format(result.salaryBalancePericulosidade)));
+    if (result.salaryBalanceAdditional) rows.push(resultRow('Outros adicionais sobre saldo', brl.format(result.salaryBalanceAdditional)));
+    rows.push(resultRow(`Aviso-prévio (${result.noticeDays} dias)`, result.noticePay ? brl.format(result.noticePayBase) : result.noticeModeLabel));
+    if (result.noticePayInsalubrity) rows.push(resultRow('Vantagem / insalubridade sobre aviso', brl.format(result.noticePayInsalubrity)));
+    if (result.noticePayPericulosidade) rows.push(resultRow('Vantagem / periculosidade sobre aviso', brl.format(result.noticePayPericulosidade)));
+    if (result.noticePayAdditional) rows.push(resultRow('Outros adicionais sobre aviso', brl.format(result.noticePayAdditional)));
+    rows.push(resultRow(`13º proporcional — salário-base (${result.thirteenthCurrentMonths}/12 avos)`, brl.format(result.thirteenthCurrentBase)));
+    if (result.thirteenthCurrentInsalubrity) rows.push(resultRow('Vantagem / insalubridade sobre 13º proporcional', brl.format(result.thirteenthCurrentInsalubrity)));
+    if (result.thirteenthCurrentPericulosidade) rows.push(resultRow('Vantagem / periculosidade sobre 13º proporcional', brl.format(result.thirteenthCurrentPericulosidade)));
+    if (result.thirteenthCurrentAdditional) rows.push(resultRow('Outros adicionais sobre 13º proporcional', brl.format(result.thirteenthCurrentAdditional)));
+    if (result.thirteenthNoticeMonths) {
+      rows.push(resultRow(`13º indenizado — salário-base (projeção, ${result.thirteenthNoticeMonths}/12 avos)`, brl.format(result.thirteenthNoticeProjectionBase)));
+      if (result.thirteenthNoticeProjectionInsalubrity) rows.push(resultRow('Vantagem / insalubridade sobre 13º indenizado', brl.format(result.thirteenthNoticeProjectionInsalubrity)));
+      if (result.thirteenthNoticeProjectionPericulosidade) rows.push(resultRow('Vantagem / periculosidade sobre 13º indenizado', brl.format(result.thirteenthNoticeProjectionPericulosidade)));
+      if (result.thirteenthNoticeProjectionAdditional) rows.push(resultRow('Outros adicionais sobre 13º indenizado', brl.format(result.thirteenthNoticeProjectionAdditional)));
+    }
+    rows.push(resultRow(`Férias proporcionais (${result.vacationCurrentMonths}/12 avos)`, brl.format(result.vacationCurrentBase + result.vacationCurrentThird)));
+    if (result.vacationNoticeMonths) rows.push(resultRow(`Férias indenizadas — projeção do aviso (${result.vacationNoticeMonths}/12 avos)`, brl.format(result.vacationNoticeProjectionBase + result.vacationNoticeProjectionThird)));
     if (result.vacationPeriodsDue) rows.push(resultRow(`Férias vencidas (${result.vacationPeriodsDue} período(s))`, brl.format(result.vacationDueSimpleBase + result.vacationDueSimpleThird)));
     if (result.vacationPeriodsDouble) rows.push(resultRow(`Férias em dobro (${result.vacationPeriodsDouble} período(s))`, brl.format(result.vacationDueDoubleBase + result.vacationDueDoubleThird)));
     if (result.projectedNoticeDays) rows.push(detailRow('Término projetado do aviso', `${formatDateKey(result.projectedTerminationDate)} (${result.projectedNoticeDays} dias)`));
     rows.push(resultRow('Total bruto', brl.format(result.totalGross)));
     if (result.noticeDeduction) rows.push(resultRow('Desconto de aviso', `− ${brl.format(result.noticeDeduction)}`));
     rows.push(resultRow('Total antes de INSS/IRRF', brl.format(result.directSettlement), 'result-total'));
+    rows.push(
+      resultRow(`INSS sobre saldo de salário (tabela ${result.taxTableYear})`, `− ${brl.format(result.inssSalary)}`),
+      resultRow(`INSS sobre 13º proporcional (tabela ${result.taxTableYear})`, `− ${brl.format(result.inssThirteenth)}`),
+      resultRow(`IRRF estimado sobre saldo (${result.dependents} dependente(s))`, `− ${brl.format(result.irrfSalary)}`),
+      resultRow(`IRRF estimado sobre 13º (${result.dependents} dependente(s))`, `− ${brl.format(result.irrfThirteenth)}`),
+      resultRow('Total líquido estimado', brl.format(result.estimatedNet), 'result-total'),
+    );
     if (result.fgtsFinePercent) {
       rows.push(resultRow(`Multa do FGTS (${result.fgtsFinePercent}%)`, brl.format(result.fgtsFine)));
       rows.push(resultRow(`Saque do FGTS (até ${result.fgtsWithdrawalPercent}%)`, brl.format(result.fgtsWithdrawal)));
     }
     rows.push(element('p', 'result-note', result.unemploymentEligible
-      ? 'Seguro-desemprego: possível, sujeito aos demais requisitos legais.'
-      : 'Seguro-desemprego: não previsto para esta modalidade.'));
+      ? `Seguro-desemprego: possível, sujeito aos demais requisitos legais. IRRF estimado com ${result.dependents} dependente(s); confira o TRCT/eSocial.`
+      : `Seguro-desemprego: não previsto para esta modalidade. IRRF estimado com ${result.dependents} dependente(s); confira o TRCT/eSocial.`));
     resultBox.replaceChildren(element('h3', '', 'Resumo estimado'), ...rows);
     setError(error);
   } catch (exception) {
