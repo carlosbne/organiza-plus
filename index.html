@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'none'; form-action 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; style-src-elem 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'none'; form-action 'self'">
   <meta name="description" content="Gestão de tarefas, cálculos e consultas para Departamento Pessoal.">
   <title>Organiza+ | Rotina de Departamento Pessoal</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
@@ -25,7 +25,7 @@
       <a href="#tarefas">Tarefas</a>
       <a href="#indicadores">Indicadores</a>
       <a href="#ferramentas">Ferramentas</a>
-      <a href="#consultas">Consultas</a>
+      <a href="./consultas">Consultas</a>
       <a href="./auth" id="logoutLink">Sair</a>
     </nav>
   </header>
@@ -103,18 +103,10 @@
 
     <section id="ferramentas" class="tools-section" aria-labelledby="tools-title">
       <div class="section-heading"><div><span class="eyebrow">Cálculos frequentes</span><h2 id="tools-title">Ferramentas</h2></div></div>
-      <div class="tool-grid">
+      <div class="tool-grid three">
         <button class="tool-card" type="button" data-dialog="calcDialog"><span class="tool-icon blue">＋</span><span><strong>Adicionais e DSR</strong><small>Horas extras e adicional noturno</small></span><span aria-hidden="true">→</span></button>
         <button class="tool-card" type="button" data-dialog="costDialog"><span class="tool-icon purple">R$</span><span><strong>Custo de contratação</strong><small>Encargos, provisões e benefícios</small></span><span aria-hidden="true">→</span></button>
-      </div>
-    </section>
-
-    <section id="consultas" class="tools-section" aria-labelledby="consult-title">
-      <div class="section-heading"><div><span class="eyebrow">Base de conhecimento</span><h2 id="consult-title">Manuais e procedimentos</h2></div></div>
-      <div class="tool-grid three">
-        <button class="tool-card" type="button" data-dialog="manualDialog"><span class="tool-icon sand">DP</span><span><strong>Manual DP</strong><small>Dúvidas trabalhistas frequentes</small></span><span aria-hidden="true">→</span></button>
-        <button class="tool-card" type="button" data-dialog="fgtsDialog"><span class="tool-icon green">FG</span><span><strong>FGTS Digital</strong><small>Guias mensais e rescisórias</small></span><span aria-hidden="true">→</span></button>
-        <button class="tool-card" type="button" data-dialog="proceduresDialog"><span class="tool-icon gray">↗</span><span><strong>Rescisão e seguro</strong><small>Procedimentos operacionais</small></span><span aria-hidden="true">→</span></button>
+        <button class="tool-card" type="button" data-dialog="terminationDialog"><span class="tool-icon rose">TR</span><span><strong>Rescisão contratual</strong><small>Verbas, aviso-prévio e FGTS</small></span><span aria-hidden="true">→</span></button>
       </div>
     </section>
   </main>
@@ -157,30 +149,35 @@
     </form>
   </dialog>
 
-  <dialog id="manualDialog" class="modal wide info-dialog">
-    <form method="dialog" class="modal-shell"><header><div><span class="eyebrow">Consulta rápida</span><h2>Manual legislativo de DP</h2></div><button class="icon-button" value="close" aria-label="Fechar">×</button></header><div class="modal-body knowledge">
-      <section><h3>Salário e remuneração</h3><details><summary>Como calcular salário mensal e proporcional?</summary><p>Valor-hora: salário bruto ÷ jornada mensal. Proporcional: (salário ÷ 30) × dias trabalhados.</p></details><details><summary>Qual é o prazo de pagamento?</summary><p>Até o 5º dia útil do mês seguinte; o sábado conta como dia útil. Referência: art. 459 da CLT.</p></details><details><summary>Insalubridade e periculosidade</summary><p>Insalubridade pode ser de 10%, 20% ou 40%, conforme enquadramento. Periculosidade corresponde, em regra, a 30% do salário-base.</p></details><details><summary>Licença por casamento</summary><p>Até três dias consecutivos de ausência justificada. Referência: art. 473, II, da CLT.</p></details></section>
-      <section><h3>Férias</h3><details><summary>Direito e parcelamento</summary><p>O direito é adquirido após 12 meses. O período pode ser dividido em até três partes, sendo uma com ao menos 14 dias.</p></details><details><summary>Abono pecuniário</summary><p>É possível converter até um terço das férias em abono. Referência: art. 143 da CLT.</p></details><details><summary>Faltas injustificadas</summary><p>Mais de cinco faltas no período aquisitivo podem reduzir os dias de férias. Referência: art. 130 da CLT.</p></details></section>
-      <section><h3>Rescisão, saúde e sindicato</h3><details><summary>Prazo de pagamento da rescisão</summary><p>Dez dias corridos após o término do contrato. Consulte o art. 477 da CLT.</p></details><details><summary>Aviso-prévio e abandono</summary><p>No pedido de demissão, o aviso não cumprido pode ser descontado. O abandono exige análise do período de faltas e da intenção de abandonar.</p></details><details><summary>Atestados médicos</summary><p>Em regra, a empresa cobre os primeiros 15 dias; a partir do 16º, o caso pode ser encaminhado ao INSS.</p></details><details><summary>Data-base</summary><p>Mês de reajuste da categoria. A dispensa nos 30 dias anteriores pode gerar indenização adicional, conforme legislação aplicável.</p></details></section>
-    </div></form>
+  <dialog id="terminationDialog" class="modal wide">
+    <form method="dialog" class="modal-shell"><header><div><span class="eyebrow">Estimativa</span><h2>Rescisão contratual</h2></div><button class="icon-button" value="close" aria-label="Fechar">×</button></header>
+      <div class="modal-body two-columns">
+        <div>
+          <p class="modal-intro">Informe os dados do contrato por prazo indeterminado para estimar as verbas do desligamento, com adicionais e descontos discriminados.</p>
+          <div class="field-grid" id="terminationFields">
+            <label>Nome do empregado<input id="terminationEmployeeName" type="text" maxlength="120" autocomplete="name" placeholder="Opcional"></label>
+            <label>Tipo de desligamento<select id="terminationType"><option value="sem_justa_causa">Dispensa sem justa causa</option><option value="pedido_demissao">Pedido de demissão</option><option value="com_justa_causa">Dispensa por justa causa</option><option value="acordo_484a">Rescisão por acordo (art. 484-A)</option></select></label>
+            <label>Modalidade do aviso<select id="terminationNotice"></select></label>
+            <label>Data de admissão<input id="terminationAdmissionDate" type="date"></label>
+            <label>Data do desligamento<input id="terminationDate" type="date"></label>
+            <label>Salário-base (R$)<input id="terminationSalary" type="number" min="0.01" step="0.01" value="3000"></label>
+            <label>Salário mínimo de referência (R$)<input id="terminationMinimumWage" type="number" min="0.01" step="0.01" value="1621"></label>
+            <label>Insalubridade<select id="terminationInsalubrity"><option value="0">Não possui</option><option value="10">Grau mínimo (10% do salário mínimo)</option><option value="20">Grau médio (20% do salário mínimo)</option><option value="40">Grau máximo (40% do salário mínimo)</option></select></label>
+            <label>Periculosidade<select id="terminationHazardous"><option value="0">Não possui</option><option value="30">30% do salário-base</option></select></label>
+            <label>Número de dependentes (IRRF)<input id="terminationDependents" type="number" min="0" max="50" step="1" value="0"></label>
+            <label>Outros adicionais / média variável (R$)<input id="terminationAdditional" type="number" min="0" step="0.01" value="0"></label>
+            <label>Férias vencidas simples (períodos)<input id="terminationVacationDue" type="number" min="0" max="50" step="1" value="0"></label>
+            <label>Férias vencidas em dobro (períodos)<input id="terminationVacationDouble" type="number" min="0" max="50" step="1" value="0"></label>
+            <label>Saldo do FGTS para a multa/saque (R$)<input id="terminationFgts" type="number" min="0" step="0.01" value="0"></label>
+          </div>
+          <p id="terminationError" class="form-error modal-error" role="alert" hidden></p>
+        </div>
+        <aside class="result-box termination-result" id="terminationResult" aria-live="polite"><p>Preencha admissão e desligamento para visualizar a estimativa.</p></aside>
+      </div>
+      <p class="legal-note">INSS e IRRF estimados pela tabela de 2026, com incidência separada sobre saldo salarial e 13º atual. Insalubridade depende de caracterização técnica; esta estimativa não acumula os adicionais. Não contempla contrato a termo, estabilidade, faltas, parcelas variáveis sem média informada, RRA, múltiplos vínculos, convenção coletiva ou conferência do eSocial/TRCT.</p>
+    </form>
   </dialog>
 
-  <dialog id="fgtsDialog" class="modal info-dialog">
-    <form method="dialog" class="modal-shell"><header><div><span class="eyebrow">Procedimento</span><h2>FGTS Digital</h2></div><button class="icon-button" value="close" aria-label="Fechar">×</button></header><div class="modal-body knowledge">
-      <section><h3>Guia rescisória e multa de 40%</h3><ol><li>Envie e valide o evento S-2299 no eSocial.</li><li>Acesse as remunerações para fins rescisórios.</li><li>Confira o histórico e gere a guia com pagamento por PIX.</li></ol></section>
-      <section><h3>Guia rápida</h3><p>Indicada para quitar toda a competência mensal. Confira empregador, competência, vencimento e trabalhadores antes da emissão.</p></section>
-      <section><h3>Guia parametrizada</h3><ol><li>Filtre por competência, estabelecimento ou CPF.</li><li>Selecione os débitos desejados.</li><li>Adicione à guia, revise e emita.</li></ol></section>
-    </div></form>
-  </dialog>
-
-  <dialog id="proceduresDialog" class="modal info-dialog">
-    <form method="dialog" class="modal-shell"><header><div><span class="eyebrow">Passo a passo</span><h2>Rescisão e seguro-desemprego</h2></div><button class="icon-button" value="close" aria-label="Fechar">×</button></header><div class="modal-body knowledge">
-      <section><h3>Importação no Empregador Web</h3><ol><li>Acesse o portal com o certificado do gestor.</li><li>Abra <strong>Requerimento → Importar arquivo</strong>.</li><li>Selecione o arquivo .SD, importe e registre o protocolo.</li></ol></section>
-      <section><h3>Consulta de arquivo e erros</h3><ol><li>Abra <strong>Requerimento → Consultar arquivo</strong>.</li><li>Filtre pela data de envio.</li><li>Confira divergências de CPF/PIS, nome e dados da rescisão antes de corrigir.</li></ol></section>
-      <section><h3>Checklist de rescisão</h3><ol><li>Confirme motivo, datas e aviso-prévio.</li><li>Valide eventos e bases no eSocial.</li><li>Revise verbas, descontos, FGTS e prazo legal.</li><li>Emita documentos e arquive os comprovantes.</li></ol></section>
-    </div></form>
-
-  </dialog>
 </body>
 
 </html>
