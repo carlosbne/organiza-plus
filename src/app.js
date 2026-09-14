@@ -399,6 +399,8 @@ function updateTermination() {
       hazardousPercent: $('#terminationHazardous').value,
       dependents: $('#terminationDependents').value,
       additionalMonthlyAverage: $('#terminationAdditional').value,
+      absenceDays: $('#terminationAbsenceDays').value,
+      otherDeductions: $('#terminationOtherDeductions').value,
       vacationPeriodsDue: $('#terminationVacationDue').value,
       vacationPeriodsDouble: $('#terminationVacationDouble').value,
       fgtsBalance: $('#terminationFgts').value,
@@ -432,6 +434,8 @@ function updateTermination() {
     if (result.projectedNoticeDays) rows.push(detailRow('Término projetado do aviso', `${formatDateKey(result.projectedTerminationDate)} (${result.projectedNoticeDays} dias)`));
     rows.push(resultRow('Total bruto', brl.format(result.totalGross)));
     if (result.noticeDeduction) rows.push(resultRow('Desconto de aviso', `− ${brl.format(result.noticeDeduction)}`));
+    if (result.absenceDeduction) rows.push(resultRow(`Desconto de faltas / DSR (${result.absenceDays} dia(s))`, `− ${brl.format(result.absenceDeduction)}`));
+    if (result.otherDeductions) rows.push(resultRow('Outros descontos diversos', `− ${brl.format(result.otherDeductions)}`));
     rows.push(resultRow('Total antes de INSS/IRRF', brl.format(result.directSettlement), 'result-total'));
     rows.push(
       resultRow(`INSS sobre saldo de salário (tabela ${result.taxTableYear})`, `− ${brl.format(result.inssSalary)}`),

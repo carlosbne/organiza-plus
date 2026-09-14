@@ -39,13 +39,14 @@ test('interfaces não usam manipuladores inline e Consultas fica separada da pá
 
 test('simulador de rescisão expõe as opções adicionais do cenário de referência', async () => {
   const home = await source('index.html');
-  for (const field of ['terminationEmployeeName', 'terminationMinimumWage', 'terminationInsalubrity', 'terminationHazardous', 'terminationDependents']) {
+  for (const field of ['terminationEmployeeName', 'terminationMinimumWage', 'terminationInsalubrity', 'terminationHazardous', 'terminationDependents', 'terminationAbsenceDays', 'terminationOtherDeductions']) {
     assert.match(home, new RegExp(`id=["']${field}["']`));
   }
   assert.match(home, /value="10"[^>]*>Grau mínimo/);
   assert.match(home, /value="20"[^>]*>Grau médio/);
   assert.match(home, /value="40"[^>]*>Grau máximo/);
   assert.match(home, /value="30"[^>]*>30% do salário-base/);
+  assert.doesNotMatch(home, /Não contempla contrato a termo, estabilidade, faltas,/i);
 });
 
 test('JavaScript evita APIs que permitem injeção de HTML ou execução dinâmica', async () => {

@@ -189,6 +189,32 @@ test('integra a média mensal de adicionais à remuneração das verbas', () => 
   assert.equal(result.vacationCurrentThird, 194.44);
 });
 
+test('aplica desconto de faltas sobre a remuneração e outros descontos fixos', () => {
+  const result = calculateTerminationSettlement({
+    ...base,
+    noticeMode: 'trabalhado',
+    admissionDate: '2026-01-01',
+    terminationDate: '2026-02-15',
+    salary: 3000,
+    additionalMonthlyAverage: 500,
+    absenceDays: 2,
+    otherDeductions: 150,
+    fgtsBalance: 0,
+  });
+
+  assert.equal(result.remuneration, 3500);
+  assert.equal(result.absenceDays, 2);
+  assert.equal(result.absenceDeduction, 233.33);
+  assert.equal(result.otherDeductions, 150);
+  assert.equal(result.directSettlement, 2727.78);
+  assert.equal(result.totalDeductions, 233.33 + 150 + result.inssTotal + result.irrfTotal);
+});
+
+test('rejeita dias de falta e outros descontos negativos', () => {
+  assert.throws(() => calculateTerminationSettlement({ ...base, absenceDays: -1 }), /faltas/i);
+  assert.throws(() => calculateTerminationSettlement({ ...base, otherDeductions: -1 }), /outros descontos/i);
+});
+
 test('rejeita datas, valores e combinações de aviso inválidos', () => {
   assert.throws(() => calculateTerminationSettlement({ ...base, admissionDate: '2026-02-30' }), /data de admissão/i);
   assert.throws(() => calculateTerminationSettlement({ ...base, terminationDate: '2023-05-31' }), /antes da admissão/i);

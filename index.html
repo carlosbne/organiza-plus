@@ -166,6 +166,8 @@
             <label>Periculosidade<select id="terminationHazardous"><option value="0">Não possui</option><option value="30">30% do salário-base</option></select></label>
             <label>Número de dependentes (IRRF)<input id="terminationDependents" type="number" min="0" max="50" step="1" value="0"></label>
             <label>Outros adicionais / média variável (R$)<input id="terminationAdditional" type="number" min="0" step="0.01" value="0"></label>
+            <label>Faltas / DSR (dias)<input id="terminationAbsenceDays" type="number" min="0" step="0.01" value="0"></label>
+            <label>Outros descontos diversos (R$)<input id="terminationOtherDeductions" type="number" min="0" step="0.01" value="0" placeholder="Ex.: vales, plano de saúde"></label>
             <label>Férias vencidas simples (períodos)<input id="terminationVacationDue" type="number" min="0" max="50" step="1" value="0"></label>
             <label>Férias vencidas em dobro (períodos)<input id="terminationVacationDouble" type="number" min="0" max="50" step="1" value="0"></label>
             <label>Saldo do FGTS para a multa/saque (R$)<input id="terminationFgts" type="number" min="0" step="0.01" value="0"></label>
@@ -174,7 +176,7 @@
         </div>
         <aside class="result-box termination-result" id="terminationResult" aria-live="polite"><p>Preencha admissão e desligamento para visualizar a estimativa.</p></aside>
       </div>
-      <p class="legal-note">INSS e IRRF estimados pela tabela de 2026, com incidência separada sobre saldo salarial e 13º atual. Insalubridade depende de caracterização técnica; esta estimativa não acumula os adicionais. Não contempla contrato a termo, estabilidade, faltas, parcelas variáveis sem média informada, RRA, múltiplos vínculos, convenção coletiva ou conferência do eSocial/TRCT.</p>
+      <p class="legal-note">INSS e IRRF estimados pela tabela de 2026, com incidência separada sobre saldo salarial e 13º atual. Insalubridade depende de caracterização técnica; esta estimativa não acumula os adicionais. Faltas/DSR e outros descontos são considerados conforme os valores informados. Não contempla contrato a termo, estabilidade, parcelas variáveis sem média informada, RRA, múltiplos vínculos, convenção coletiva ou conferência do eSocial/TRCT.</p>
     </form>
   </dialog>
 

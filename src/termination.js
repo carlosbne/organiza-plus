@@ -250,6 +250,8 @@ export function calculateTerminationSettlement(input = {}) {
   const vacationPeriodsDue = nonNegativeInteger(input.vacationPeriodsDue, 'Férias vencidas');
   const vacationPeriodsDouble = nonNegativeInteger(input.vacationPeriodsDouble, 'Férias em dobro');
   const fgtsBalance = nonNegativeNumber(input.fgtsBalance, 'Saldo do FGTS');
+  const absenceDays = nonNegativeNumber(input.absenceDays, 'Dias de faltas');
+  const otherDeductions = nonNegativeNumber(input.otherDeductions, 'Outros descontos');
 
   const insalubrityValue = minimumWage * (insalubrityPercent / 100);
   const hazardousValue = salary * (hazardousPercent / 100);
@@ -272,6 +274,7 @@ export function calculateTerminationSettlement(input = {}) {
 
   const salaryBalanceParts = scaleParts(remunerationParts, terminationDate.getUTCDate() / 30);
   const salaryBalance = sumParts(salaryBalanceParts);
+  const absenceDeduction = (remuneration / 30) * absenceDays;
   const noticePay = sumParts(notice.noticePayParts);
   const noticeDeduction = sumParts(notice.noticeDeductionParts);
 
@@ -315,11 +318,12 @@ export function calculateTerminationSettlement(input = {}) {
     + vacationDueSimpleThird
     + vacationDueDoubleBase
     + vacationDueDoubleThird;
-  const directSettlement = totalGross - noticeDeduction;
+  const directSettlement = totalGross - noticeDeduction - absenceDeduction - otherDeductions;
 
-  const inssSalary = calculateInss2026(salaryBalance);
+  const taxableSalaryBalance = Math.max(0, salaryBalance - absenceDeduction);
+  const inssSalary = calculateInss2026(taxableSalaryBalance);
   const inssThirteenth = calculateInss2026(thirteenthCurrent);
-  const irrfSalary = calculateIrrf2026({ gross: salaryBalance, inss: inssSalary.value, dependents });
+  const irrfSalary = calculateIrrf2026({ gross: taxableSalaryBalance, inss: inssSalary.value, dependents });
   const irrfThirteenth = calculateIrrf2026({
     gross: thirteenthCurrent,
     inss: inssThirteenth.value,
@@ -328,7 +332,7 @@ export function calculateTerminationSettlement(input = {}) {
   });
   const inssTotal = inssSalary.value + inssThirteenth.value;
   const irrfTotal = irrfSalary.value + irrfThirteenth.value;
-  const totalDeductions = noticeDeduction + inssTotal + irrfTotal;
+  const totalDeductions = noticeDeduction + absenceDeduction + otherDeductions + inssTotal + irrfTotal;
   const estimatedNet = totalGross - totalDeductions;
 
   const fgtsFinePercent = type === 'sem_justa_causa' ? 40 : type === 'acordo_484a' ? 20 : 0;
@@ -351,6 +355,9 @@ export function calculateTerminationSettlement(input = {}) {
     salary: roundMoney(salary),
     minimumWage: roundMoney(minimumWage),
     additionalMonthlyAverage: roundMoney(additionalMonthlyAverage),
+    absenceDays,
+    absenceDeduction: roundMoney(absenceDeduction),
+    otherDeductions: roundMoney(otherDeductions),
     dependents,
     insalubrityPercent,
     insalubrityValue: roundMoney(insalubrityValue),
@@ -404,7 +411,7 @@ export function calculateTerminationSettlement(input = {}) {
     vacationPeriodsDouble,
     vacationDueDoubleBase: roundMoney(vacationDueDoubleBase),
     vacationDueDoubleThird: roundMoney(vacationDueDoubleThird),
-    inssSalaryBase: roundMoney(salaryBalance),
+    inssSalaryBase: roundMoney(taxableSalaryBalance),
     inssSalary: inssSalary.value,
     inssThirteenthBase: roundMoney(thirteenthCurrent),
     inssThirteenth: inssThirteenth.value,
