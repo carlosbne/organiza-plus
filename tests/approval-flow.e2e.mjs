@@ -18,7 +18,19 @@ const ROOT = resolve(import.meta.dirname, '..');
 const PORT = 4173;
 const MOCK_PORT = 54321;
 const DEBUG_PORT = 9224;
-const SUPABASE_URL = 'https://hzgnpvdkryrqgonlrskm.supabase.co';
+// URL do projeto derivada em runtime — repositório público NUNCA versiona o
+// valor real (o Netlify detecta segredos em arquivos). Fonte: env SUPABASE_URL
+// ou src/config.local.js (gitignored). Sem fonte, o teste é encerrado com skip.
+let SUPABASE_URL = process.env.SUPABASE_URL || '';
+if (!SUPABASE_URL) {
+  try {
+    ({ SUPABASE_URL } = await import('../src/config.local.js'));
+  } catch {}
+}
+if (!SUPABASE_URL) {
+  console.log('Teste não executado: SUPABASE_URL não disponível (defina a env ou crie src/config.local.js).');
+  process.exit(2);
+}
 const CHROME = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 
 const ADMIN_EMAIL = 'admin@organiza.test';
