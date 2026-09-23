@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; style-src-elem 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'none'; form-action 'self'">
+  <meta name="description" content="Área administrativa do Organiza+ para aprovação de cadastros.">
+  <title>Administração | Organiza+</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./src/admin.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="Organiza+, página inicial">
+      <img class="brand-logo" src="./brand.svg" alt="">
+      <span class="brand-name">Organiza<span>+</span></span>
+    </a>
+    <button id="menuToggle" class="nav-toggle" type="button" aria-expanded="false" aria-controls="primaryNav" aria-label="Abrir menu">
+      <span></span><span></span><span></span>
+    </button>
+    <nav id="primaryNav" class="topnav" aria-label="Navegação principal">
+      <a href="./">Tarefas</a>
+      <a href="./#ferramentas">Ferramentas</a>
+      <a href="./consultas">Consultas</a>
+      <a href="./admin" aria-current="page">Administração</a>
+      <a href="./auth" id="logoutLink">Sair</a>
+    </nav>
+  </header>
+
+  <main id="conteudo" class="page-shell">
+
+    <section id="accessDenied" class="auth-card denied-card access-denied-card" aria-labelledby="deniedTitle" hidden>
+      <div class="status-icon is-denied" aria-hidden="true">🔒</div>
+      <h2 id="deniedTitle">Acesso negado</h2>
+      <p class="status-lead">Sua conta não tem permissão de administrador para abrir esta página. Você pode voltar à sua rotina normalmente.</p>
+      <button id="deniedBackButton" class="button primary auth-submit" type="button">Voltar para a rotina</button>
+    </section>
+
+    <div id="adminContent" hidden>
+      <section class="admin-hero">
+        <div>
+          <span class="eyebrow">Área restrita · papel administrador</span>
+          <h1>Administração</h1>
+          <p class="admin-quote">Aprove ou rejeite cadastros que aguardam liberação para a rotina de Departamento Pessoal.</p>
+        </div>
+        <div class="hero-date">
+          <span>Hoje</span>
+          <strong id="todayLabel">—</strong>
+        </div>
+      </section>
+
+      <section class="admin-stats" aria-label="Resumo de cadastros">
+        <article class="metric"><span>Na fila de aprovação</span><strong id="statPending" class="stat-pending">0</strong><small>aguardando decisão</small></article>
+        <article class="metric"><span>Aprovados</span><strong id="statApproved" class="stat-approved">0</strong><small>com acesso liberado</small></article>
+        <article class="metric metric-danger"><span>Bloqueados</span><strong id="statBlocked">0</strong><small>rejeitados, sem acesso</small></article>
+      </section>
+
+      <section class="panel admin-panel" aria-labelledby="listTitle">
+        <div class="panel-heading">
+          <h3 id="listTitle">Fila de aprovação</h3>
+          <span id="listCountPill" class="status-pill is-pending">—</span>
+        </div>
+
+        <div class="admin-tabs" role="tablist" aria-label="Filtrar cadastros">
+          <button class="tab is-active" type="button" role="tab" data-tab="pending" aria-selected="true">Fila <b id="tabPendingCount">0</b></button>
+          <button class="tab" type="button" role="tab" data-tab="approved" aria-selected="false">Aprovados <b id="tabApprovedCount">0</b></button>
+          <button class="tab" type="button" role="tab" data-tab="blocked" aria-selected="false">Bloqueados <b id="tabBlockedCount">0</b></button>
+          <button class="tab" type="button" role="tab" data-tab="history" aria-selected="false">Histórico</button>
+        </div>
+
+        <div id="profileList" class="admin-list" aria-live="polite"></div>
+        <div id="historyWrap" class="table-wrap" aria-live="polite" hidden>
+          <table>
+            <caption>Histórico de decisões registradas</caption>
+            <thead><tr><th>Usuário</th><th>Ação</th><th>Motivo / observação</th><th>Responsável</th><th>Quando</th></tr></thead>
+            <tbody id="historyBody"></tbody>
+          </table>
+        </div>
+        <div id="listEmpty" class="admin-empty" hidden>Nenhum cadastro neste filtro.</div>
+
+        <p class="admin-hint" id="adminHint">Cadastros pendentes não têm acesso a tarefas nem ferramentas. Aprove para liberar; rejeite para bloquear (o motivo aparece na tela do usuário).</p>
+      </section>
+    </div>
+  </main>
+
+  <footer><strong>Organiza+</strong><span>Ferramenta de apoio à rotina de Departamento Pessoal.</span><small>Confirmar regras, alíquotas e convenções coletivas antes de decisões oficiais.</small></footer>
+
+  <dialog id="rejectDialog" class="modal" aria-labelledby="rejectTitle" aria-describedby="rejectIntro">
+    <form method="dialog" class="modal-shell">
+      <header>
+        <div><span class="eyebrow">Rejeitar cadastro</span><h2 id="rejectTitle">Justifique a rejeição</h2></div>
+        <button class="icon-button" value="cancel" aria-label="Fechar">×</button>
+      </header>
+      <div class="modal-body">
+        <p id="rejectIntro" class="modal-intro">O motivo será exibido para <strong id="rejectTargetEmail">—</strong> na tela de status. O cadastro ficará bloqueado até uma reabertura manual.</p>
+        <label>Motivo da rejeição <small>(opcional, até 500 caracteres)</small>
+          <textarea id="rejectReason" maxlength="500" rows="4" placeholder="Ex.: e-mail corporativo não identificado na base de funcionários…"></textarea>
+        </label>
+        <p id="rejectError" class="form-error" role="alert" hidden></p>
+        <div class="form-actions">
+          <button class="button secondary" type="button" id="rejectCancel">Cancelar</button>
+          <button class="button danger" type="submit" id="rejectConfirm">Rejeitar cadastro</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+</body>
+</html>

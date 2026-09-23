@@ -1,4 +1,5 @@
 src/config.local.js
+docs/sql-editor/
 .env.local
 .env
 node_modules/

@@ -1,6 +1,8 @@
 import { getSession, isSupabaseConfigured, onAuthStateChange, signOut } from './supabase.js';
+import { getMyStatus, isAdmin, isApproved } from './profile.js';
 
 let currentSession = null;
+let currentProfile = null;
 
 function updateAuthNavigation() {
   const link = document.querySelector('#logoutLink');
@@ -14,6 +16,8 @@ function updateAuthNavigation() {
     link.href = './auth';
     link.removeAttribute('aria-label');
   }
+  const adminLink = document.querySelector('#adminLink');
+  if (adminLink) adminLink.hidden = !isAdmin(currentProfile);
 }
 
 function configureMobileNavigation() {
@@ -58,16 +62,42 @@ async function configureSession() {
   if (!isSupabaseConfigured) return true;
 
   currentSession = (await getSession()).data.session;
-  updateAuthNavigation();
   if (!currentSession) {
     window.location.replace('./auth');
     return false;
   }
 
+  let profile = null;
+  try {
+    profile = await getMyStatus();
+  } catch {
+    profile = null;
+  }
+  currentProfile = profile;
+  updateAuthNavigation();
+  if (!isApproved(profile)) {
+    window.location.replace('./status');
+    return false;
+  }
+
   onAuthStateChange((_event, session) => {
     currentSession = session;
-    updateAuthNavigation();
-    if (!session) window.location.replace('./auth');
+    if (!session) {
+      currentProfile = null;
+      updateAuthNavigation();
+      window.location.replace('./auth');
+      return;
+    }
+    getMyStatus()
+      .then((next) => {
+        currentProfile = next;
+        updateAuthNavigation();
+        if (!isApproved(next)) window.location.replace('./status');
+      })
+      .catch((error) => {
+        // Falha transitória: mantém a sessão; o fail-closed estrito ocorre no init.
+        console.warn('Supabase: falha ao consultar o status do perfil.', error);
+      });
   });
   return true;
 }

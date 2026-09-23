@@ -34,9 +34,19 @@ $('#authForm').addEventListener('submit', async (event) => {
     const password = $('#authPassword').value;
     const result = signUpMode ? await signUp(email, password) : await signIn(email, password);
     if (result.error) throw result.error;
-    if (signUpMode && !result.data.session) showError('authError', 'Conta criada. Confirme seu e-mail para entrar.');
-    else window.location.href = './';
-  } catch (error) { showError('authError', error.message); }
+    if (signUpMode) {
+      if (result.data.session) window.location.href = './status';
+      else showError('authError', 'Conta criada. Confirme seu e-mail e depois entre para acompanhar o status do cadastro.');
+    } else {
+      window.location.href = './';
+    }
+  } catch (error) {
+    if (signUpMode && /already registered/i.test(error.message || '')) {
+      showError('authError', 'Essa conta já está cadastrada. Entre com a sua senha para ver o status do cadastro.');
+    } else {
+      showError('authError', error.message);
+    }
+  }
 });
 
 $('#forgotPassword').addEventListener('click', () => {
@@ -56,9 +66,15 @@ $('#registerForm').addEventListener('submit', async (event) => {
     if (!isSupabaseConfigured) throw new Error('O Supabase ainda não foi configurado.');
     const result = await signUp($('#registerEmail').value.trim(), $('#registerPassword').value);
     if (result.error) throw result.error;
-    if (result.data.session) window.location.href = './';
-    else showError('registerError', 'Conta criada. Confirme seu e-mail para entrar.');
-  } catch (error) { showError('registerError', error.message); }
+    if (result.data.session) window.location.href = './status';
+    else showError('registerError', 'Conta criada. Confirme seu e-mail e depois entre para acompanhar o status do cadastro.');
+  } catch (error) {
+    if (/already registered/i.test(error.message || '')) {
+      showError('registerError', 'Essa conta já está cadastrada. Entre com a sua senha para ver o status do cadastro.');
+    } else {
+      showError('registerError', error.message);
+    }
+  }
 });
 
 $('#registerToggle').addEventListener('click', () => {

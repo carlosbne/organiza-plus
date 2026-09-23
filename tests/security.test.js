@@ -9,7 +9,7 @@ async function source(path) {
 }
 
 test('páginas HTML definem CSP restritiva e não carregam scripts de terceiros', async () => {
-  for (const page of ['index.html', 'consultas.html']) {
+  for (const page of ['index.html', 'consultas.html', 'status.html', 'admin.html']) {
     const html = await source(page);
     assert.match(html, /Content-Security-Policy/);
     assert.match(html, /default-src 'self'/);
@@ -50,7 +50,7 @@ test('simulador de rescisão expõe as opções adicionais do cenário de refer�
 });
 
 test('JavaScript evita APIs que permitem injeção de HTML ou execução dinâmica', async () => {
-  for (const file of ['src/app.js', 'src/consultas.js', 'src/auth.js', 'src/core.js', 'src/supabase.js', 'src/storage.js', 'src/termination.js', 'src/taxes.js']) {
+  for (const file of ['src/app.js', 'src/consultas.js', 'src/auth.js', 'src/core.js', 'src/supabase.js', 'src/storage.js', 'src/termination.js', 'src/taxes.js', 'src/profile.js', 'src/status.js', 'src/admin.js']) {
     const javascript = await source(file);
     assert.doesNotMatch(javascript, /\.(innerHTML|outerHTML)\s*=/, file);
     assert.doesNotMatch(javascript, /insertAdjacentHTML|document\.write|\beval\s*\(|new Function/, file);

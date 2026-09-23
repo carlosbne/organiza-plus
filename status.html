@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; style-src-elem 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'none'; form-action 'self'">
+  <meta name="description" content="Status do cadastro no Organiza+.">
+  <title>Status do cadastro | Organiza+</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./auth.css">
+  <script type="module" src="./src/status.js"></script>
+</head>
+<body class="auth-page">
+  <main class="auth-layout">
+    <section class="auth-intro">
+      <a class="brand auth-brand" href="./status"><img class="brand-logo" src="./brand.svg" alt=""><span class="brand-name">Organiza<span>+</span></span></a>
+      <div>
+        <span class="eyebrow status-intro-eyebrow">Sua conta</span>
+        <h1 id="introTitle">Cada acesso<br><em id="introEmphasis">começa com um cuidado.</em></h1>
+        <p id="introText">Acompanhe aqui o andamento do seu cadastro antes de acessar a rotina.</p>
+      </div>
+      <div class="auth-illustration" aria-hidden="true">
+        <svg viewBox="0 0 420 190" fill="none">
+          <path class="illustration-line" d="M20 145C68 102 91 119 132 88C178 54 196 96 236 67C275 39 315 74 400 24"/>
+          <circle class="illustration-dot dot-one" cx="132" cy="88" r="6"/>
+          <circle class="illustration-dot dot-two" cx="236" cy="67" r="7"/>
+          <rect class="illustration-card" x="282" y="96" width="92" height="58" rx="12"/>
+          <path d="M299 119H348M299 131H331" stroke="#183F3A" stroke-width="5" stroke-linecap="round"/>
+          <path d="M34 36H94M64 6V66" stroke="#D6B36A" stroke-width="2" stroke-linecap="round" opacity=".55"/>
+        </svg>
+      </div>
+      <small>Gestão clara para rotinas que pedem atenção.</small>
+    </section>
+
+    <section id="pendingCard" class="auth-card status-card" aria-labelledby="pendingTitle" hidden>
+      <div class="status-icon is-pending" aria-hidden="true">🕒</div>
+      <span class="status-pill is-pending">Pendente</span>
+      <h2 id="pendingTitle">Cadastro em análise</h2>
+      <p class="status-lead">Seu cadastro está aguardando a aprovação de um administrador. Enquanto isso, o acesso à sua rotina continua bloqueado.</p>
+      <div class="status-meta">
+        <div><span>E-mail</span><strong id="pendingEmail">—</strong></div>
+        <div><span>Solicitado em</span><strong id="pendingDate">—</strong></div>
+      </div>
+      <button id="signOutButton" class="button secondary auth-submit" type="button">Sair da conta</button>
+      <p class="status-note">Assim que sua conta for liberada, entre novamente para acessar o Organiza+.</p>
+    </section>
+
+    <section id="blockedCard" class="auth-card status-card" aria-labelledby="blockedTitle" hidden>
+      <div class="status-icon is-blocked" aria-hidden="true">!</div>
+      <span class="status-pill is-blocked">Bloqueado</span>
+      <h2 id="blockedTitle">Cadastro não aprovado</h2>
+      <p class="status-lead">Sua conta está bloqueada e não é possível acessar a rotina. A liberação depende de uma nova ação manual do administrador.</p>
+      <div id="blockedReason" class="reason-box" hidden>
+        <span class="reason-label">Motivo informado pelo administrador</span>
+        <p id="blockedReasonText">—</p>
+      </div>
+      <div class="status-meta">
+        <div><span>E-mail</span><strong id="blockedEmail">—</strong></div>
+        <div><span>Avaliado em</span><strong id="blockedDate">—</strong></div>
+      </div>
+      <button id="signOutButtonBlocked" class="button secondary auth-submit" type="button">Sair da conta</button>
+      <p class="status-note">Se você acredita que houve um engano, procure o administrador responsável pela aprovação.</p>
+    </section>
+
+    <section id="unknownCard" class="auth-card status-card" aria-labelledby="unknownTitle" hidden>
+      <div class="status-icon is-denied" aria-hidden="true">?</div>
+      <span class="status-pill is-blocked">Aguardando</span>
+      <h2 id="unknownTitle">Não foi possível confirmar seu status</h2>
+      <p class="status-lead">Não conseguimos confirmar a situação do seu cadastro neste momento. Tente novamente em instantes — o acesso será liberado somente após a confirmação.</p>
+      <button id="signOutButtonUnknown" class="button secondary auth-submit" type="button">Sair da conta</button>
+    </section>
+  </main>
+</body>
+</html>

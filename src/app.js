@@ -8,7 +8,8 @@ import {
 } from './core.js';
 import { calculateTerminationSettlement } from './termination.js';
 import { getSession, isSupabaseConfigured, loadTasks, onAuthStateChange, removeTask, signOut, upsertTask } from './supabase.js';
-import { getSafeLocalStorage, readStorage, writeStorage } from './storage.js';
+import { getMyStatus, isAdmin, isApproved } from './profile.js';
+import { getSafeLocalStorage, readStorage, removeStorage, writeStorage } from './storage.js';
 
 const STORAGE_KEY = 'organizaPlus.tasks.v3';
 const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -21,10 +22,15 @@ let tasks = parseStoredTasks(readStorage(taskStorage, STORAGE_KEY));
 let activeFilter = 'all';
 let editingId = null;
 let currentSession = null;
+let currentProfile = null;
+
+function taskKey() {
+  return currentSession ? `${STORAGE_KEY}:${currentSession.user.id}` : STORAGE_KEY;
+}
 
 function updateAuthNavigation() {
   const link = $('#logoutLink');
-  if (!link) return;
+  const adminLink = $('#adminLink');
   if (currentSession) {
     link.textContent = 'Sair';
     link.href = '#logout';
@@ -34,6 +40,7 @@ function updateAuthNavigation() {
     link.href = './auth';
     link.removeAttribute('aria-label');
   }
+  if (adminLink) adminLink.hidden = !isAdmin(currentProfile);
 }
 
 function configureMobileNavigation() {
@@ -68,11 +75,23 @@ function setError(element, message = '') {
 }
 
 function saveTasks() {
-  writeStorage(taskStorage, STORAGE_KEY, JSON.stringify(tasks));
+  writeStorage(taskStorage, taskKey(), JSON.stringify(tasks));
+}
+
+function setSyncNotice(message = '') {
+  const notice = $('#syncNotice');
+  if (!notice) return;
+  notice.textContent = message;
+  notice.hidden = !message;
 }
 
 function syncTask(task) {
-  return upsertTask(task).catch((error) => console.warn('Supabase: falha ao sincronizar tarefa.', error));
+  return upsertTask(task)
+    .then(() => setSyncNotice())
+    .catch((error) => {
+      console.warn('Supabase: falha ao sincronizar tarefa.', error);
+      setSyncNotice('Algumas alterações não foram sincronizadas com a nuvem. Verifique sua conexão ou faça login novamente.');
+    });
 }
 
 function element(tag, className, text) {
@@ -490,6 +509,23 @@ function configureDialogs() {
   });
 }
 
+async function ensureApprovedSession() {
+  let profile = null;
+  try {
+    profile = await getMyStatus();
+  } catch (error) {
+    // Falha fechada: sem confirmação de aprovação, o app não é liberado.
+    console.warn('Supabase: falha ao consultar o status do perfil.', error);
+  }
+  currentProfile = profile;
+  updateAuthNavigation();
+  if (!isApproved(profile)) {
+    window.location.replace('./status');
+    return false;
+  }
+  return true;
+}
+
 async function init() {
   $('#todayLabel').textContent = longDate.format(new Date());
   $('#taskForm').addEventListener('submit', submitTask);
@@ -510,6 +546,7 @@ async function init() {
     try {
       const result = await signOut();
       if (result?.error) throw result.error;
+      removeStorage(taskStorage, taskKey());
       window.location.replace('./auth');
     } catch (error) {
       console.error('Supabase: não foi possível encerrar a sessão.', error);
@@ -525,14 +562,53 @@ async function init() {
   updateAdditions();
   updateCost();
   if (isSupabaseConfigured) {
-    currentSession = (await getSession()).data.session;
+    const { data: { session } } = await getSession();
+    currentSession = session;
     updateAuthNavigation();
     if (!currentSession) { window.location.replace('./auth'); return; }
-    onAuthStateChange((_event, session) => {
+    tasks = parseStoredTasks(readStorage(taskStorage, taskKey()));
+
+    const approved = await ensureApprovedSession();
+    if (!approved) return;
+
+    onAuthStateChange(async (_event, session) => {
+      if (!session) {
+        removeStorage(taskStorage, taskKey());
+        currentSession = null;
+        currentProfile = null;
+        window.location.replace('./auth');
+        return;
+      }
+      const userChanged = !currentSession || currentSession.user.id !== session.user.id;
       currentSession = session;
+      if (userChanged) {
+        tasks = parseStoredTasks(readStorage(taskStorage, taskKey()));
+        render();
+      }
+      let profile = null;
+      try {
+        profile = await getMyStatus();
+      } catch (error) {
+        // Falha transitória no refresh de sessão: mantém o usuário na aplicação.
+        // O fail-closed estrito acontece na inicialização (ensureApprovedSession).
+        console.warn('Supabase: falha ao consultar o status do perfil.', error);
+        return;
+      }
+      currentProfile = profile;
       updateAuthNavigation();
-      if (session) loadTasks().then((remote) => { tasks = parseStoredTasks(JSON.stringify(remote || [])); render(); });
-      else window.location.replace('./auth');
+      if (!isApproved(profile)) {
+        window.location.replace('./status');
+        return;
+      }
+      try {
+        const remote = await loadTasks();
+        if (remote) {
+          tasks = parseStoredTasks(JSON.stringify(remote));
+          render();
+        }
+      } catch (error) {
+        console.warn('Supabase: falha ao carregar tarefas.', error);
+      }
     });
     try {
       const remoteTasks = await loadTasks();

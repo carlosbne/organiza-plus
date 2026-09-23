@@ -26,6 +26,7 @@
       <a href="#indicadores">Indicadores</a>
       <a href="#ferramentas">Ferramentas</a>
       <a href="./consultas">Consultas</a>
+      <a href="./admin" id="adminLink" hidden>Administração</a>
       <a href="./auth" id="logoutLink">Sair</a>
     </nav>
   </header>
@@ -84,6 +85,7 @@
           </div>
           <label>Observações <textarea id="taskNotes" name="notes" maxlength="1000" rows="4" placeholder="Contexto, pendências e próximos passos"></textarea></label>
           <p id="taskError" class="form-error" role="alert" hidden></p>
+          <p id="syncNotice" class="sync-notice" role="status" hidden></p>
           <div class="form-actions">
             <button id="cancelEdit" class="button secondary" type="button" hidden>Cancelar</button>
             <button class="button primary" type="submit"><span id="submitLabel">Adicionar ao fluxo</span></button>

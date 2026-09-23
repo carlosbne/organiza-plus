@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mockup · Painel de administração | Organiza+</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="./mockup.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Organiza+, página inicial">
+      <img class="brand-logo" src="../brand.svg" alt="">
+      <span class="brand-name">Organiza<span>+</span></span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primaryNav" aria-label="Abrir menu">
+      <span></span><span></span><span></span>
+    </button>
+    <nav id="primaryNav" class="topnav" aria-label="Navegação principal">
+      <a href="#">Tarefas</a>
+      <a href="#ferramentas">Ferramentas</a>
+      <a href="#">Consultas</a>
+      <a href="#" style="background:var(--blue-soft);color:var(--text)">Administração</a>
+      <a href="#">Sair</a>
+    </nav>
+  </header>
+
+  <main class="page-shell">
+    <section class="admin-hero">
+      <div>
+        <span class="eyebrow">Área restrita · papel administrador</span>
+        <h1>Administração</h1>
+        <p class="admin-quote">Aprove ou rejeite cadastros que aguardam liberação para a rotina de Departamento Pessoal.</p>
+      </div>
+      <div class="hero-date">
+        <span>Hoje</span>
+        <strong>22 de setembro de 2026</strong>
+      </div>
+    </section>
+
+    <section class="admin-stats" aria-label="Resumo de cadastros">
+      <article class="metric"><span>Na fila de aprovação</span><strong style="color:#8a5d0c">2</strong><small>aguardando decisão</small></article>
+      <article class="metric"><span>Aprovados</span><strong style="color:var(--green)">14</strong><small>com acesso liberado</small></article>
+      <article class="metric metric-danger"><span>Bloqueados</span><strong>1</strong><small>rejeitados, sem acesso</small></article>
+    </section>
+
+    <section class="panel admin-panel" aria-labelledby="queueTitle">
+      <div class="panel-heading">
+        <h3 id="queueTitle">Fila de aprovação</h3>
+        <span class="status-pill is-pending">2 pendentes</span>
+      </div>
+
+      <div class="admin-tabs" role="tablist" aria-label="Filtrar cadastros">
+        <button class="tab is-active" type="button" role="tab" aria-selected="true">Fila <b>2</b></button>
+        <button class="tab" type="button" role="tab" aria-selected="false">Aprovados <b>14</b></button>
+        <button class="tab" type="button" role="tab" aria-selected="false">Bloqueados <b>1</b></button>
+        <button class="tab" type="button" role="tab" aria-selected="false">Histórico</button>
+      </div>
+
+      <div class="admin-list">
+        <article class="admin-item">
+          <span class="avatar" aria-hidden="true">AS</span>
+          <div class="admin-item-id">
+            <strong>ana.santos@empresa.com.br</strong>
+            <small>Solicitado em 22 set de 2026 · 14:32</small>
+          </div>
+          <div class="admin-item-actions">
+            <button class="button small ghost" type="button">Ver detalhes</button>
+            <button class="button small danger" type="button">Rejeitar</button>
+            <button class="button small primary" type="button">Aprovar</button>
+          </div>
+        </article>
+
+        <article class="admin-item">
+          <span class="avatar" aria-hidden="true">CP</span>
+          <div class="admin-item-id">
+            <strong>carlos.prado@empresa.com.br</strong>
+            <small>Solicitado em 21 set de 2026 · 09:18</small>
+          </div>
+          <div class="admin-item-actions">
+            <button class="button small ghost" type="button">Ver detalhes</button>
+            <button class="button small danger" type="button">Rejeitar</button>
+            <button class="button small primary" type="button">Aprovar</button>
+          </div>
+        </article>
+      </div>
+
+      <p class="admin-hint">Cadastros pendentes não têm acesso a tarefas nem ferramentas. Aprove para liberar, rejeite para bloquear com um motivo.</p>
+    </section>
+
+    <section class="panel admin-panel admin-history" aria-labelledby="historyTitle" style="margin-top:16px">
+      <div class="panel-heading"><h3 id="historyTitle">Histórico de decisões</h3><span class="pill">Últimas ações</span></div>
+      <div class="table-wrap">
+        <table>
+          <caption>Acompanhamento das revisões pelo administrador</caption>
+          <thead><tr><th>Usuário</th><th>Ação</th><th>Motivo / observação</th><th>Responsável</th><th>Quando</th></tr></thead>
+          <tbody>
+            <tr><td>maria.lima@empresa.com.br</td><td><span class="history-action approve">Aprovado</span></td><td>—</td><td>admin@organiza.plus</td><td>22 set, 10:04</td></tr>
+            <tr><td>joao.castro@empresa.com.br</td><td><span class="history-action reject">Rejeitado</span></td><td>E-mail fora da base corporativa</td><td>admin@organiza.plus</td><td>20 set, 16:47</td></tr>
+            <tr><td>bruna.silva@empresa.com.br</td><td><span class="history-action reopen">Reaberto</span></td><td>E-mail atualizado pelo RH</td><td>admin@organiza.plus</td><td>19 set, 11:22</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer><strong>Organiza+</strong><span>Ferramenta de apoio à rotina de Departamento Pessoal.</span><small>Mockup de design · área de administração do fluxo de aprovação.</small></footer>
+</body>
+</html>

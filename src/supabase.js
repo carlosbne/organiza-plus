@@ -42,3 +42,19 @@ export async function removeTask(id) {
   const { error } = await supabase.from('tasks').delete().eq('id', id);
   if (error) throw error;
 }
+
+// ---- Fluxo de aprovação de contas (RPCs SECURITY DEFINER) ----
+
+export const getMyStatus = () => supabase.rpc('get_my_status');
+
+export const adminListProfiles = (status = null) => supabase.rpc('admin_list_profiles', { in_status: status });
+
+export const adminReview = (targetId, decision, reason = null) => supabase.rpc('admin_review', {
+  in_target_id: targetId,
+  in_decision: decision,
+  in_reason: reason,
+});
+
+export const adminReopen = (targetId) => supabase.rpc('admin_reopen', { in_target_id: targetId });
+
+export const adminListHistory = (limit = 30) => supabase.rpc('admin_list_history', { in_limit: limit });

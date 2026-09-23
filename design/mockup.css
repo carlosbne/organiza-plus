@@ -1,0 +1,117 @@
+/* Mockups do fluxo de aprovação — Organiza+
+   Componentes novos desenhados sobre os tokens de styles.css/auth.css. */
+
+/* ---------- Ícones de status ---------- */
+.status-icon {
+  display: grid; place-items: center;
+  width: 56px; height: 56px; border-radius: 18px;
+  font-size: 22px; font-weight: 800;
+}
+.status-icon.is-pending { background: #f7eccf; color: #936510; }
+.status-icon.is-blocked { background: var(--red-soft); color: var(--red); }
+.status-icon.is-approved { background: var(--green-soft); color: var(--green); }
+.status-icon.is-denied { background: #efeeec; color: #55514c; }
+
+/* ---------- Pills de status ---------- */
+.status-pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 10px; font-weight: 750; text-transform: uppercase; letter-spacing: .06em;
+  padding: 5px 10px; border-radius: 999px;
+}
+.status-pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.status-pill.is-pending  { color: #8a5d0c; background: #f6ecd2; }
+.status-pill.is-approved { color: var(--green); background: var(--green-soft); }
+.status-pill.is-blocked  { color: var(--red); background: var(--red-soft); }
+
+/* ---------- Cartão de status (tela do usuário) ---------- */
+.status-card { text-align: center; }
+.status-card .status-icon { margin: 0 auto 20px; }
+.status-card h2 { margin: 10px 0 8px; font-size: 1.8rem; letter-spacing: -.04em; color: #183f3a; }
+.status-card .status-lead { margin: 0 auto 22px; max-width: 340px; color: #60716c; font-size: .95rem; line-height: 1.65; }
+.status-meta {
+  display: grid; gap: 10px; text-align: left;
+  background: #f4f6f5; border: 1px solid rgba(24,63,58,.1);
+  border-radius: 14px; padding: 14px 16px; margin-bottom: 24px;
+}
+.status-meta div { display: flex; justify-content: space-between; gap: 12px; font-size: .85rem; }
+.status-meta span { color: #60716c; }
+.status-meta strong { color: #183f3a; font-weight: 700; }
+.reason-box {
+  text-align: left; background: var(--red-soft);
+  border: 1px solid #f0c6c6; border-radius: 14px; padding: 14px 16px; margin-bottom: 16px;
+}
+.reason-box .reason-label { display: block; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--red); margin-bottom: 5px; }
+.reason-box p { margin: 0; font-size: .92rem; color: #183f3a; }
+.status-note { font-size: .8rem; color: #77786f; margin: 16px 0 0; }
+
+/* ---------- Painel admin ---------- */
+.admin-hero { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; padding: 20px 0 26px; }
+.admin-hero h1 { font-size: clamp(30px, 4vw, 44px); letter-spacing: -1.6px; margin: 8px 0 0; }
+.admin-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 22px; }
+.admin-tabs { display: flex; gap: 4px; background: #ebe9e4; padding: 4px; border-radius: 12px; width: fit-content; max-width: 100%; overflow: auto; margin-bottom: 14px; }
+.admin-tabs .tab {
+  border: 0; background: transparent; border-radius: 9px; padding: 9px 14px;
+  font-size: .8rem; font-weight: 650; color: var(--muted); cursor: pointer; white-space: nowrap;
+}
+.admin-tabs .tab.is-active { background: #fffdf9; color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+.admin-tabs .tab b { font-weight: 800; margin-left: 5px; }
+
+.admin-panel { padding: 20px 22px; }
+.admin-list { display: grid; gap: 10px; }
+.admin-item {
+  display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center;
+  border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; background: #fff;
+}
+.avatar {
+  display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px;
+  background: var(--text); color: #fffdf9; font-size: .85rem; font-weight: 750; letter-spacing: .02em;
+}
+.avatar.is-blocked { background: #e8e6e2; color: #55514c; }
+.admin-item-id { min-width: 0; }
+.admin-item-id strong { display: block; font-size: .92rem; }
+.admin-item-id small { display: block; font-size: .74rem; color: var(--muted); margin-top: 2px; overflow-wrap: anywhere; }
+.admin-item-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.button.small { padding: 0 12px; min-height: 36px; font-size: .76rem; border-radius: 9px; }
+.button.ghost { background: #efeeec; color: var(--text); }
+.button.ghost:hover { background: #e5e2df; }
+.button.danger { background: var(--red); color: #fff; }
+.button.danger:hover { background: #9c3131; }
+.button.gold { background: #b17b2c; color: #fffdf9; }
+.button.gold:hover { background: #936510; }
+.admin-empty { text-align: center; padding: 46px 16px; color: var(--muted); font-size: .88rem; }
+
+.admin-history thead th:last-child, .admin-history td:last-child { text-align: left; }
+.history-action { font-size: .74rem; font-weight: 750; padding: 3px 8px; border-radius: 999px; text-transform: uppercase; letter-spacing: .05em; }
+.history-action.approve { background: var(--green-soft); color: var(--green); }
+.history-action.reject { background: var(--red-soft); color: var(--red); }
+.history-action.reopen { background: #f6ecd2; color: #8a5d0c; }
+
+p.admin-hint { font-size: .8rem; color: var(--muted); margin: 18px 0 0; }
+.admin-quote { margin: 0 0 14px; font-size: .85rem; color: var(--muted); }
+
+/* ---------- Modal estático (demonstração) ---------- */
+.mock-backdrop {
+  position: fixed; inset: 0; z-index: 60; display: grid; place-items: center;
+  background: rgba(24, 37, 33, .55); backdrop-filter: blur(3px); padding: 20px;
+}
+.mock-modal {
+  width: min(460px, 100%); background: #fffdf9; border: 1px solid rgba(24,63,58,.14);
+  border-radius: 20px; box-shadow: 0 24px 70px rgba(24,63,58,.28); padding: 26px;
+}
+.mock-modal h3 { margin: 0 0 5px; font-size: 1.25rem; letter-spacing: -.03em; }
+.mock-modal .modal-sub { margin: 0 0 18px; font-size: .85rem; color: #60716c; }
+.mock-modal textarea { min-height: 110px; resize: vertical; }
+.mock-modal .form-actions { margin-top: 14px; }
+
+/* ---------- Acesso negado ---------- */
+.denied-card { text-align: center; padding-top: 10px; }
+.denied-card h2 { font-size: 1.7rem; letter-spacing: -.04em; color: #183f3a; margin: 10px 0 8px; }
+.denied-card .status-lead { margin: 0 auto 20px; max-width: 330px; color: #60716c; font-size: .95rem; line-height: 1.65; }
+
+/* ---------- Ajustes de responsividade do mockup ---------- */
+@media (max-width: 900px) {
+  .admin-stats { grid-template-columns: 1fr; }
+  .admin-item { grid-template-columns: auto 1fr; }
+  .admin-item-actions { grid-column: 1 / -1; justify-content: flex-start; }
+  .admin-hero { flex-direction: column; align-items: flex-start; }
+}

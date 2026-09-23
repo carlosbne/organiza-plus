@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mockup · Acesso negado | Organiza+</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="../auth.css">
+  <link rel="stylesheet" href="./mockup.css">
+</head>
+<body class="auth-page">
+  <main class="auth-layout">
+    <section class="auth-intro">
+      <a class="brand auth-brand" href="#"><img class="brand-logo" src="../brand.svg" alt=""><span class="brand-name">Organiza<span>+</span></span></a>
+      <div>
+        <span class="eyebrow" style="color:#d6b36a">Área restrita</span>
+        <h1>Mural de aprovações<br><em>só para administradores.</em></h1>
+        <p>Esta área é reservada ao papel de administrador do Organiza+.</p>
+      </div>
+      <div class="auth-illustration" aria-hidden="true">
+        <svg viewBox="0 0 420 190" fill="none">
+          <path class="illustration-line" d="M20 145C68 102 91 119 132 88C178 54 196 96 236 67C275 39 315 74 400 24"/>
+          <circle class="illustration-dot dot-one" cx="132" cy="88" r="6"/>
+          <circle class="illustration-dot dot-two" cx="236" cy="67" r="7"/>
+          <rect class="illustration-card" x="282" y="96" width="92" height="58" rx="12"/>
+          <path d="M299 119H348M299 131H331" stroke="#183F3A" stroke-width="5" stroke-linecap="round"/>
+          <path d="M34 36H94M64 6V66" stroke="#D6B36A" stroke-width="2" stroke-linecap="round" opacity=".55"/>
+        </svg>
+      </div>
+      <small>Gestão clara para rotinas que pedem atenção.</small>
+    </section>
+
+    <section class="auth-card denied-card" aria-labelledby="deniedTitle">
+      <div class="status-icon is-denied" aria-hidden="true">🔒</div>
+      <h2 id="deniedTitle">Acesso negado</h2>
+      <p class="status-lead">Sua conta não tem permissão de administrador para abrir esta página. Você pode voltar à sua rotina normalmente.</p>
+
+      <button class="button primary auth-submit" type="button">Voltar para a rotina</button>
+      <p class="status-note">Em caso de dúvida ou necessidade de permissão, fale com um administrador do Organiza+.</p>
+    </section>
+  </main>
+</body>
+</html>

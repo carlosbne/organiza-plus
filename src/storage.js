@@ -30,3 +30,13 @@ export function writeStorage(storage, key, value) {
     return false;
   }
 }
+
+export function removeStorage(storage, key) {
+  if (!storage) return false;
+  try {
+    storage.removeItem(key);
+    return true;
+  } catch {
+    return false;
+  }
+}
