@@ -110,6 +110,11 @@ test('migration de fluxo de aprovação aplica as barreiras preventivas', async 
   // Máquina de estados: pending -> approved|blocked; approved -> blocked
   assert.match(migration, /\(status = 'pending' and in_decision in \('approved', 'blocked'\)\)/);
   assert.match(migration, /\(status = 'approved' and in_decision = 'blocked'\)/);
+
+  // auth.users.email é citext no Supabase: nada exposto deve retornar sem ::text
+  assert.match(migration, /u\.email::text as reviewed_by_email/, 'reviewed_by_email precisa de ::text (citext)');
+  assert.match(migration, /u\.email::text as actor_email/, 'actor_email precisa de ::text (citext)');
+  assert.match(migration, /new\.email::text/, 'insert/sync de e-mail precisa de ::text (citext)');
 });
 
 // ---------------------------------------------------------------------------

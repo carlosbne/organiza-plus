@@ -167,7 +167,7 @@ begin
   left join public.bootstrap_admins b on lower(b.email) = lower(new.email);
 
   insert into public.profiles (id, email, role, status)
-  values (new.id, new.email, v_role, v_status)
+  values (new.id, new.email::text, v_role, v_status)
   on conflict (id) do nothing;
 
   return new;
@@ -209,7 +209,7 @@ create or replace function public.sync_profile_email()
 returns trigger
 language plpgsql security definer set search_path = '' as $$
 begin
-  update public.profiles set email = new.email, updated_at = now() where id = new.id;
+  update public.profiles set email = new.email::text, updated_at = now() where id = new.id;
   return new;
 end $$;
 
@@ -226,7 +226,7 @@ create trigger on_auth_user_email_update
 insert into public.profiles (id, email, role, status)
 select
   u.id,
-  u.email,
+  u.email::text,
   case when b.email is not null and u.email_confirmed_at is not null then 'admin' else 'user' end,
   case when b.email is not null and u.email_confirmed_at is not null then 'approved' else 'pending' end
 from auth.users u
@@ -251,7 +251,7 @@ begin
     select
       p.id, p.email, p.role, p.status,
       p.rejection_reason,
-      u.email as reviewed_by_email,
+      u.email::text as reviewed_by_email,
       p.reviewed_at,
       p.created_at
     from public.profiles p
@@ -343,7 +343,7 @@ begin
       p.email as profile_email,
       h.action,
       h.reason,
-      u.email as actor_email,
+      u.email::text as actor_email,
       h.created_at
     from public.review_history h
     join public.profiles p on p.id = h.profile_id
